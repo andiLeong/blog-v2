@@ -33,21 +33,24 @@ Route::middleware(['auth:sanctum','admin'])->group(function () {
 });
 
 
-	Route::get('/posts', [PostController::class,'index']);
-	Route::get('/posts/{post:slug}', [PostController::class,'show']);
+Route::get('/posts', [PostController::class,'index']);
+Route::get('/posts/{post:slug}', [PostController::class,'show']);
 
-	
+Route::post('/files', function(){
+
+
+	// return request()->file();
+	logger(request('lastModified'));
+	logger(request()->file());
+	return 'ok';
+});
 
 Route::get('/test', function () {
 
 
 
-request()->session()->invalidate();
 
-return 'doen';
-$data = request()->session()->all();
 
-dd($data);
 
 	// auth()->loginUsingId(12);
 
