@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
@@ -16,7 +17,7 @@ class PostController extends Controller
     public function store()
     {
         $data = request()->validate([
-            'title' => 'required',
+            'title' => 'required|exists:posts,title',
             'body' => 'required',
         ]);
 
@@ -27,7 +28,9 @@ class PostController extends Controller
     public function update(Post $post)
     {
         $data = request()->validate([
-            'title' => 'required',
+            'title' => [
+                'required',
+                Rule::unique('posts')->ignore($post->title),],
             'body' => 'required'
         ]);
         return tap($post)->update($data);

@@ -19,11 +19,17 @@ class Post extends Model
         static::creating(function ($model) {
             $model->slug = Str::slug($model->title);
         });
+
+        static::updating(function ($model) {
+            $model->slug = Str::slug($model->title);
+        });
     }
 
 
     public function getShortDescriptionAttribute(): string
     {
-        return Str::limit($this->body, 200);
+        return Str::limit(
+            html_entity_decode(strip_tags($this->body))
+        );
     }
 }
