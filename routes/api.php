@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\GalleryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,14 +38,8 @@ Route::middleware(['auth:sanctum','admin'])->group(function () {
 Route::get('/posts', [PostController::class,'index']);
 Route::get('/posts/{post:slug}', [PostController::class,'show']);
 
-Route::post('/files', function(){
-
-
-	// return request()->file();
-	logger(request('lastModified'));
-	logger(request()->file());
-	return 'ok';
-});
+Route::post('/files', FileController::class,'store')->middleware('file.morph.validation');
+Route::get('/gallery/{id}', GalleryController::class,'show' );
 
 Route::get('/test', function () {
 
