@@ -18,8 +18,9 @@ class FileFactory extends Factory
             'type' => collect(['jpg','jpeg','mp4'])->random(),
             'size' => collect(range(1000,2000))->random(),
             'last_modified' => now()->subdays(9),
-            'url' => 'https://avatars.githubusercontent.com/u/68339288?s=48&v=4',
+            'url' => $this->faker->imageUrl(200, 200, 'cats'),
             'name' => Str::random(10),
+            'pinned' => false,
         ];
     }
 

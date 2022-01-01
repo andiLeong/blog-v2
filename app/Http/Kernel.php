@@ -64,6 +64,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\AdminOnly::class,
-        'file.morph.validation' => \App\Http\Middleware\EnsureFileMorphModel::class,
+        'file.morph.validation' => \App\Http\Middleware\EnsureFileMorphModelExisted::class,
     ];
 }
