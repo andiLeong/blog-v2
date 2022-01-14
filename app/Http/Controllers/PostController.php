@@ -20,7 +20,6 @@ class PostController extends Controller
             'title' => 'required|unique:posts',
             'body' => 'required',
         ]);
-
         return Post::create($data + ['user_id' => auth()->id()] );
     }
 
@@ -30,7 +29,7 @@ class PostController extends Controller
         $data = request()->validate([
             'title' => [
                 'required',
-                Rule::unique('posts')->ignore($post->title),],
+                Rule::unique('posts')->ignore($post->id),],
             'body' => 'required'
         ]);
         return tap($post)->update($data);
