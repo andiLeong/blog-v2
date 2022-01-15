@@ -31,14 +31,14 @@ Route::middleware(['auth:sanctum','admin'])->group(function () {
 	Route::delete('/posts/{post:slug}', [PostController::class,'destroy']);
 	Route::patch('/posts/{post:slug}', [PostController::class,'update']);
 
-
+    Route::post('/files', [FileController::class,'store'])->middleware('file.morph.validation');
 });
 
 
 Route::get('/posts', [PostController::class,'index']);
 Route::get('/posts/{post:slug}', [PostController::class,'show']);
 
-Route::post('/files', [FileController::class,'store'])->middleware('file.morph.validation');
+
 Route::get('/gallery/{gallery}', [GalleryController::class,'show'] );
 
 Route::get('/test', function () {
