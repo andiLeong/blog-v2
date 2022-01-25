@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\GalleryController;
 use Illuminate\Http\Request;
@@ -40,6 +41,9 @@ Route::get('/posts/{post:slug}', [PostController::class,'show']);
 
 
 Route::get('/gallery/{gallery}', [GalleryController::class,'show'] );
+
+
+Route::get('/order', [OrderController::class,'index']);
 
 Route::get('/test', function () {
 
