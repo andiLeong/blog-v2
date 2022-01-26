@@ -24,7 +24,7 @@ class OrderFactory extends Factory
     public function definition()
     {
         return [
-            'number' => Str::random(8),
+            'status' => collect(['delivered','shipped','unshipped','received'])->random(),
             'total_price' => rand(10,9999),
             'paid' => collect([0,1])->random(),
             'country' => collect(['American','Malaysia','India','China','Singapore','Russia','United Kingdom','Canada','Brazil'])->random(),
