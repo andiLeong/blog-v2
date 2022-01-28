@@ -44,6 +44,7 @@ Route::get('/gallery/{gallery}', [GalleryController::class,'show'] );
 
 
 Route::get('/order', [OrderController::class,'index']);
+Route::delete('/order/{ids}', [OrderController::class,'destroy']);
 
 Route::get('/test', function () {
 

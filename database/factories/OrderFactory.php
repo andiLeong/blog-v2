@@ -25,7 +25,7 @@ class OrderFactory extends Factory
     {
         return [
             'status' => collect(['delivered','shipped','unshipped','received'])->random(),
-            'total_price' => rand(10,9999),
+            'price' => rand(10,9999),
             'paid' => collect([0,1])->random(),
             'country' => collect(['American','Malaysia','India','China','Singapore','Russia','United Kingdom','Canada','Brazil'])->random(),
             'customer' => $this->faker->name(),

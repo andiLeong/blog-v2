@@ -8,7 +8,7 @@ class OrderBy extends Filter
 {
     public function apply(Builder $query)
     {
-        $direction = reqeust('direction') === 'asc' ?? 'desc';
-        return $query->where(request($this->getFilterName()) , $direction );
+        $direction = request('direction') ?? 'desc';
+        return $query->orderBy(request($this->getFilterName()) , $direction);
     }
 }

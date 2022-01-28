@@ -8,6 +8,7 @@ class Customer extends Filter
 {
     public function apply(Builder $query)
     {
-        return $query->where($this->getFilterName(), 'like', request($this->getFilterName()) );
+        $name = request($this->getFilterName());
+        return $query->where($this->getFilterName(), 'like', '%' .$name . '%');
     }
 }
