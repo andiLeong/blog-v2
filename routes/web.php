@@ -1,10 +1,12 @@
 <?php
 
+use App\Models\Employee\Benefit\EmployeeBenefitFactory;
 use Illuminate\Support\Facades\Route;
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+Route::get('/benefit', function (EmployeeBenefitFactory $benefit) {
+    $employee = new \App\Models\Employee();
+    dd($employee->benefit($benefit->make()));
+});
 
 
 
