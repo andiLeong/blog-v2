@@ -5,6 +5,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\GalleryController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,9 +47,7 @@ Route::get('/gallery/{gallery}', [GalleryController::class,'show'] );
 Route::get('/order', [OrderController::class,'index']);
 Route::delete('/order/{ids}', [OrderController::class,'destroy']);
 
-Route::get('/test', function () {
-
-
+Route::get('/test', function (Request $request) {
 
 
 

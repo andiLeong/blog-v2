@@ -11,7 +11,7 @@ class PostController extends Controller
     public function index()
     {
         $page = request('perPage') ?? 5;
-        return Post::select(['id','slug','title'])->latest()->paginate($page);
+        return Post::select(['id','slug','title','body'])->latest()->paginate($page);
     }
 
     public function store()
