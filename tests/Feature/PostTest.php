@@ -15,11 +15,8 @@ class PostTest extends TestCase
     public function it_can_render_a_list_of_posts()
     {
         $posts = Post::factory()->count(10)->create();
-        $response = $this->get('/api/posts?perPage=10');
-        $body = json_decode($response->content(),true);
-
-        $response->assertStatus(200);
-        $this->assertCount($posts->count(),$body['data']);
+        $response = $this->get('/api/posts?perPage=10')->assertStatus(200)->json();
+        $this->assertCount($posts->count(),$response['data']);
     }
 
     /** @test */
