@@ -16,7 +16,9 @@ class LoginController extends Controller
 
         abort_if(!Auth::attempt($credentials), 403,'Cant Sign In , please check your credentials');
         $request->session()->regenerate();
-        return auth()->user();
-        return ['msg' => 'success'];
+        return [
+            'id' => auth()->id(),
+            'name' => auth()->user()->name,
+        ];
     }
 }
