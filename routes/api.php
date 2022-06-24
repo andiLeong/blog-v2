@@ -4,6 +4,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\SearchPostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,7 @@ Route::middleware(['auth:sanctum','admin'])->group(function () {
 
 
 Route::get('/posts', [PostController::class,'index']);
+Route::get('/posts/search', [SearchPostController::class,'index']);
 Route::get('/posts/{post:slug}', [PostController::class,'show']);
 
 
