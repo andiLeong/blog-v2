@@ -72,7 +72,7 @@ Route::post('/location-distance', function(){
     $dist = acos($dist);
     $dist = rad2deg($dist);
     $miles = $dist * 60 * 1.1515;
-    return $miles * 1.609344;
+    return round($miles * 1.609344,2);
 
 //    return ($miles * 1.609344);
 
