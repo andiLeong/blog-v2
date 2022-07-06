@@ -58,3 +58,22 @@ Route::get('/test', function (Request $request) {
 
     return 'hi';
 });
+
+Route::post('/location-distance', function(){
+
+    $userLocation = request('target_longitude') - request('user_longitude');
+    $storeLatitude = request('target_latitude');
+    $dist =
+        sin(deg2rad(  request('user_latitude')) )
+        * sin(deg2rad($storeLatitude))
+        +  cos(deg2rad(  request('user_latitude') ))
+        * cos(deg2rad($storeLatitude))
+        * cos(deg2rad($userLocation));
+    $dist = acos($dist);
+    $dist = rad2deg($dist);
+    $miles = $dist * 60 * 1.1515;
+    return $miles * 1.609344;
+
+//    return ($miles * 1.609344);
+
+});
