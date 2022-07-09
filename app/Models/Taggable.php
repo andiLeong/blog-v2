@@ -14,4 +14,9 @@ trait Taggable
     {
         return $this->tags()->syncWithoutDetaching($tags);
     }
+
+    public function tagCollection($tags)
+    {
+        return $this->tags()->make()->collectionFor($tags);
+    }
 }

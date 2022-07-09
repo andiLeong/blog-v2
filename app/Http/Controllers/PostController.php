@@ -31,9 +31,11 @@ class PostController extends Controller
             'title' => [
                 'required',
                 Rule::unique('posts')->ignore($post->id),],
-            'body' => 'required'
+            'body' => 'required',
+            'tags' => 'required|array',
         ]);
-        return tap($post)->update($data);
+
+        return $post->patch($data);
     }
 
 

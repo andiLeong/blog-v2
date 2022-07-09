@@ -38,7 +38,7 @@ class Post extends Model
      * @param array $data
      * @return array
      */
-    public function dataOfCreation(array $data)
+    public function attributes(array $data)
     {
         return collect($data)->except('tags')->merge([
             'user_id' => auth()->id()
@@ -52,10 +52,19 @@ class Post extends Model
      */
     public function store($data)
     {
-        $tags = $this->tags()->make()->collectionFor($data['tags']);
+        $tags = $this->tagCollection($data['tags']);
         return tap(
-            Post::create($this->dataOfCreation($data))
+            Post::create($this->attributes($data))
         )->tag($tags);
+    }
+
+    public function patch($data)
+    {
+        $tags = $this->tagCollection($data['tags']);
+        $this->tags()->sync($tags);
+        return tap($this)->update(
+            $this->attributes($data)
+        );
     }
 
 }
