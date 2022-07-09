@@ -8,11 +8,11 @@ use Illuminate\Support\Str;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, Taggable;
 
     protected $appends = ['shortDescription'];
 
-    protected $guarded = [] ;
+    protected $guarded = [];
 
     protected static function booted()
     {
@@ -32,4 +32,30 @@ class Post extends Model
             html_entity_decode(strip_tags($this->body))
         );
     }
+
+    /**
+     * get the data when store a post
+     * @param array $data
+     * @return array
+     */
+    public function dataOfCreation(array $data)
+    {
+        return collect($data)->except('tags')->merge([
+            'user_id' => auth()->id()
+        ])->all();
+    }
+
+    /**
+     * create post action
+     * @param $data
+     * @return mixed
+     */
+    public function store($data)
+    {
+        $tags = $this->tags()->make()->collectionFor($data['tags']);
+        return tap(
+            Post::create($this->dataOfCreation($data))
+        )->tag($tags);
+    }
+
 }

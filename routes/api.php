@@ -5,6 +5,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\SearchPostController;
+use App\Http\Controllers\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,8 @@ Route::get('/posts', [PostController::class,'index']);
 Route::get('/posts/search', [SearchPostController::class,'index']);
 Route::get('/posts/{post:slug}', [PostController::class,'show']);
 
+
+Route::get('/tags', [TagController::class,'index']);
 
 Route::get('/gallery/{gallery}', [GalleryController::class,'show'] );
 

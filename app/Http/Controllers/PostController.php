@@ -11,16 +11,17 @@ class PostController extends Controller
     public function index()
     {
         $page = request('perPage') ?? 5;
-        return Post::select(['id','slug','title','body'])->latest()->paginate($page);
+        return Post::with('tags')->select(['id', 'slug', 'title', 'body'])->latest()->paginate($page);
     }
 
-    public function store()
+    public function store(Post $post)
     {
         $data = request()->validate([
             'title' => 'required|unique:posts',
             'body' => 'required',
+            'tags' => 'required|array',
         ]);
-        return Post::create($data + ['user_id' => auth()->id()] );
+        return $post->store($data);
     }
 
 
@@ -38,6 +39,7 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
+        $post->load('tags');
         return $post;
     }
 

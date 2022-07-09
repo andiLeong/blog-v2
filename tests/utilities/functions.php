@@ -9,7 +9,7 @@ function create($class, $attributes = [], $times = null)
 
 function make($class, $attributes = [], $times = null)
 {
-    return factory($class, $times)->make($attributes);
+    return $class::factory($times)->make($attributes);
 }
 
 function admin()
