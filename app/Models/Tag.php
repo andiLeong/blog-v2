@@ -10,17 +10,6 @@ class Tag extends Model
 {
     use HasFactory;
 
-    protected static function booted()
-    {
-//        static::creating(function ($model) {
-//            $model->slug = Str::slug($model->name);
-//        });
-//
-//        static::updating(function ($model) {
-//            $model->slug = Str::slug($model->name);
-//        });
-    }
-
     public function posts()
     {
        return $this->belongsToMany(Post::class,'post_tag','tag_id','post_id');
@@ -35,7 +24,7 @@ class Tag extends Model
     public function massiveInsert(array $tags)
     {
         Tag::upsert(
-            array_map(fn($tag) => ['name' => $tag, 'slug' => $tag],$tags),
+            array_map(fn($tag) => ['name' => $tag, 'slug' => Str::slug($tag)],$tags),
             ['name','slug'],
             ['name','slug']
         );
