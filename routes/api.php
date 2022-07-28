@@ -81,4 +81,3 @@ Route::post('/location-distance', function(){
 
 });
 
-//add this to test
