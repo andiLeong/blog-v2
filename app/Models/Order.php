@@ -27,7 +27,7 @@ class Order extends Model
 //        });
 
         return [
-//            'user_id' => [],
+            'number' => [],
             'country' => [],
             'customer' => [
                 'operator' => 'like'
@@ -44,27 +44,15 @@ class Order extends Model
                 'operator' => '<',
                 'column' => 'price'
             ],
-            'number' => [],
-//            'username' => [
-//                'column' => 'user_name',
-//                'operator' => 'like',
-//            ],
-//            'country' => [
-//                'value' => 'us',
-//            ],
-//            'greater_than_team_id' => [
-//                'column' => 'user_name',
-//                'operator' => '>=',
-//            ]
         ];
-
-//        return collect([
-//            'order_by' => new OrderBy(),
-//            'customer' => new Customer(),
-//            'country' => new Country(),
-//            'number' => new Number(),
-//            'latest' => new Latest(),
-//        ]);
     }
 
+    public function getOrderFilter()
+    {
+        return [
+            'key' => 'order_by',
+            'direction' => 'direction'
+            // order_by[]=created_at&order_by[]=customer&direction[]=desc&direction[]=asc
+        ];
+    }
 }

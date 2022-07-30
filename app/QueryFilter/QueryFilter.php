@@ -25,13 +25,27 @@ class QueryFilter
         $this->filtersOption = $filtersOption;
     }
 
+    /**
+     * apply each query cause to builder
+     *
+     * @return Builder
+     */
     public function apply()
     {
         $this->filtersOption()
             ->filter(fn($filter) => is_array($filter))
             ->each(fn($filterOption, $key) => $this->attachQuery($filterOption, $key));
+
+        return $this->query;
     }
 
+    /**
+     * attach query to builder
+     *
+     * @param $option
+     * @param $key
+     * @return Builder
+     */
     public function attachQuery($option, $key)
     {
         if (count($option) === 0) {

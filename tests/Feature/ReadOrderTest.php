@@ -79,29 +79,29 @@ class ReadOrderTest extends TestCase
     /** @test */
     public function it_can_filter_order_by_latest_timestamp()
     {
-        $this->markTestSkipped();
+//        $this->markTestSkipped();
         $old = create(Order::class,['created_at' => now()->subDays(5)]);
         $new = create(Order::class,['created_at' => now()]);
 
         $response = $this->getOrder()->json();
         $this->assertEquals([$old->id,$new->id], array_column($response['data'],'id'));
 
-        $response = $this->getOrder(['latest' => 1])->json();
+        $response = $this->getOrder(['order_by' => ['id'],'direction' => ['desc']])->json();
         $this->assertEquals([$new->id,$old->id], array_column($response['data'],'id'));
     }
 
     /** @test */
     public function it_can_order_the_orders_by_an_attribute()
     {
-        $this->markTestSkipped();
+        $this->withoutExceptionHandling();
         $america = create(Order::class,['country' => 'America']);
         $china = create(Order::class,['country' => 'China']);
 
 
-        $response = $this->getOrder(['order_by' => 'country'])->json();
+        $response = $this->getOrder(['order_by' => ['country'],'direction' => ['desc']])->json();
         $this->assertEquals([$china->country,$america->country], array_column($response['data'],'country'));
 
-        $response = $this->getOrder(['order_by' => 'country','direction' => 'asc'])->json();
+        $response = $this->getOrder(['order_by' => ['country'],'direction' => ['asc']])->json();
         $this->assertEquals([$america->country,$china->country], array_column($response['data'],'country'));
     }
 
