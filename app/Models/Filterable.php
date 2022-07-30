@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\QueryFilter\OrderQueryFilter;
-use App\QueryFilter\QueryFilter;
+use App\QueryFilter\QueryFilterManager;
 use Illuminate\Database\Eloquent\Builder;
 
 trait Filterable
@@ -20,7 +20,7 @@ trait Filterable
 
 //        dd(collect(request()->all())->filter());
 //        $filterOption = $this->getFilter();
-        $filters = new QueryFilter($query, $filterOption);
+        $filters = new QueryFilterManager($query, $filterOption);
         return $filters->apply();
 
 //        if(!method_exists($this,'getFilter')){

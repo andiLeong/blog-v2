@@ -5,7 +5,7 @@ namespace App\QueryFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
-class QueryFilter
+class QueryFilterManager
 {
 
     /**
@@ -48,12 +48,18 @@ class QueryFilter
      */
     public function attachQuery($option, $key)
     {
-        if (count($option) === 0) {
-            return $this->query->where($key, request($key));
-        }
-
         $parser = new QueryArgumentPhaser($option, $key);
-        return $this->query->where($parser->column, $parser->operator, $parser->value);
+        $filters = [
+            SpecialFilter::class,
+            WhereFilter::class
+        ];
+
+        collect($filters)
+            ->map(fn($filter) => new $filter($this->query, $parser))
+            ->each
+            ->filter();
+
+        return $this->query;
     }
 
 

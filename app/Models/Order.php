@@ -44,6 +44,14 @@ class Order extends Model
                 'operator' => '<',
                 'column' => 'price'
             ],
+            'country_in' => [
+                'clause' => 'whereIn',
+                'column' => 'country'
+            ],
+            'price_between' => [
+                'clause' => 'whereBetween',
+                'column' => 'price'
+            ],
         ];
     }
 

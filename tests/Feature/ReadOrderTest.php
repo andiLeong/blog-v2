@@ -24,7 +24,7 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
-    public function it_can_filter_order_by_country()
+    public function it_can_filter_by_country_using_default_filter()
     {
         $this->withoutExceptionHandling();
         $canada = create(Order::class,['country' => 'Canada']);
@@ -33,14 +33,50 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
-    public function it_can_filter_order_by_number()
+    public function it_can_filter_using_where_in_and_greater_than()
+    {
+        $this->withoutExceptionHandling();
+        $target = create(Order::class,['country' => 'China', 'price' => 200]);
+        $china = create(Order::class,['country' => 'China', 'price' => 100]);
+        $india = create(Order::class,['country' => 'India', 'price' => 200]);
+        $this->getOrder(['country_in' => [$china->country], 'price_greater_than' => 100])
+            ->assertSee($target->number)
+            ->assertDontSee($india->number)
+            ->assertDontSee($china->number);
+    }
+
+    /** @test */
+    public function it_can_filter_using_where_in()
+    {
+        $this->withoutExceptionHandling();
+        $canada = create(Order::class,['country' => 'Canada']);
+        $china = create(Order::class,['country' => 'China']);
+        $india = create(Order::class,['country' => 'India']);
+        $this->getOrder(['country_in' => [$china->country,$india->country]])
+            ->assertSee($china->number)
+            ->assertSee($india->number)
+            ->assertDontSee($canada->number);
+    }
+
+    /** @test */
+    public function it_can_filter_using_where_between()
+    {
+        $this->withoutExceptionHandling();
+        $order = create(Order::class,['price' => 100]);
+        $order1 = create(Order::class,['price' => 10]);
+        $order2 = create(Order::class,['price' => 50]);
+        $this->getOrder(['price_between' => [1,50]])->assertSee($order2->number)->assertSee($order1->number)->assertDontSee($order->number);
+    }
+
+    /** @test */
+    public function it_can_filter_by_number_using_default_filter()
     {
         $order = create(Order::class,[],2);
         $this->getOrder(['number' => $order[0]->number])->assertSee($order[0]->number)->assertDontSee($order[1]->number);
     }
 
     /** @test */
-    public function it_can_filter_order_by_customer()
+    public function it_can_filter_by_customer_using_like_cause()
     {
         $this->withoutExceptionHandling();
         $cindy = create(Order::class,['customer' => 'cindy']);
@@ -49,7 +85,7 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
-    public function it_can_filter_order_by_greater_than()
+    public function it_can_filter_by_greater_than_operator()
     {
         $this->withoutExceptionHandling();
         $order = create(Order::class,['price' => 100]);
@@ -59,7 +95,7 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
-    public function it_can_filter_order_by_lesser_or_equal_than()
+    public function it_can_filter_by_lesser_or_equal_than_operator()
     {
         $order = create(Order::class,['price' => 100]);
         $order1 = create(Order::class,['price' => 10]);
@@ -68,7 +104,7 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
-    public function it_can_filter_order_by_lesser_than()
+    public function it_can_filter_by_lesser_than_operator()
     {
         $order = create(Order::class,['price' => 100]);
         $order1 = create(Order::class,['price' => 10]);
@@ -77,7 +113,7 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
-    public function it_can_filter_order_by_latest_timestamp()
+    public function it_can_order_by_latest_timestamp()
     {
 //        $this->markTestSkipped();
         $old = create(Order::class,['created_at' => now()->subDays(5)]);
@@ -91,7 +127,7 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
-    public function it_can_order_the_orders_by_an_attribute()
+    public function it_can_order_the_by_an_giving_attribute()
     {
         $this->withoutExceptionHandling();
         $america = create(Order::class,['country' => 'America']);

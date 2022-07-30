@@ -26,6 +26,14 @@ class QueryArgumentPhaser
         $this->defaultColumn = $defaultColumn;
     }
 
+    /**
+     * @return array
+     */
+    public function getOption(): array
+    {
+        return $this->option;
+    }
+
 
     private function getColumn()
     {
