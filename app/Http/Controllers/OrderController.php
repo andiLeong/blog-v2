@@ -8,16 +8,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $data = $request->validate([
-            'customer' => 'nullable|string',
-            'country' => 'nullable|string',
-            'number' => 'nullable|string',
-            'latest' => 'nullable',
-            'direction' => 'nullable|string',
-            'order_by' => 'nullable|string',
-        ]);
-
-        return Order::filters($data)->paginate(
+        return Order::filters()->paginate(
             $this->page(10)
         );
     }

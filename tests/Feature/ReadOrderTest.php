@@ -10,6 +10,12 @@ class ReadOrderTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    protected function setUp() :void
+    {
+        parent::setUp();
+    }
+
+
     /** @test */
     public function it_can_get_list_of_orders()
     {
@@ -20,6 +26,7 @@ class ReadOrderTest extends TestCase
     /** @test */
     public function it_can_filter_order_by_country()
     {
+        $this->withoutExceptionHandling();
         $canada = create(Order::class,['country' => 'Canada']);
         $china = create(Order::class,['country' => 'China']);
         $this->getOrder(['country' => $canada->country])->assertSee($canada->number)->assertDontSee($china->number);
@@ -35,14 +42,44 @@ class ReadOrderTest extends TestCase
     /** @test */
     public function it_can_filter_order_by_customer()
     {
+        $this->withoutExceptionHandling();
         $cindy = create(Order::class,['customer' => 'cindy']);
         $ronald = create(Order::class,['customer' => 'ronald']);
-        $this->getOrder(['customer' => $cindy->customer])->assertSee($cindy->customer)->assertDontSee($ronald->customer);
+        $this->getOrder(['customer' => 'cin'])->assertSee($cindy->customer)->assertDontSee($ronald->customer);
+    }
+
+    /** @test */
+    public function it_can_filter_order_by_greater_than()
+    {
+        $this->withoutExceptionHandling();
+        $order = create(Order::class,['price' => 100]);
+        $order1 = create(Order::class,['price' => 10]);
+        $order2 = create(Order::class,['price' => 99]);
+        $this->getOrder(['price_greater_than' => 99])->assertSee($order->number)->assertDontSee($order2->number);
+    }
+
+    /** @test */
+    public function it_can_filter_order_by_lesser_or_equal_than()
+    {
+        $order = create(Order::class,['price' => 100]);
+        $order1 = create(Order::class,['price' => 10]);
+        $order2 = create(Order::class,['price' => 99]);
+        $this->getOrder(['price_lesser_or_equal_than' => 99])->assertSee($order2->number)->assertDontSee($order->number);
+    }
+
+    /** @test */
+    public function it_can_filter_order_by_lesser_than()
+    {
+        $order = create(Order::class,['price' => 100]);
+        $order1 = create(Order::class,['price' => 10]);
+        $order2 = create(Order::class,['price' => 99]);
+        $this->getOrder(['price_lesser_than' => 100])->assertSee($order2->number)->assertDontSee($order->number);
     }
 
     /** @test */
     public function it_can_filter_order_by_latest_timestamp()
     {
+        $this->markTestSkipped();
         $old = create(Order::class,['created_at' => now()->subDays(5)]);
         $new = create(Order::class,['created_at' => now()]);
 
@@ -56,6 +93,7 @@ class ReadOrderTest extends TestCase
     /** @test */
     public function it_can_order_the_orders_by_an_attribute()
     {
+        $this->markTestSkipped();
         $america = create(Order::class,['country' => 'America']);
         $china = create(Order::class,['country' => 'China']);
 
