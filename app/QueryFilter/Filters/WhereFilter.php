@@ -1,7 +1,8 @@
 <?php
 
-namespace App\QueryFilter;
+namespace App\QueryFilter\Filters;
 
+use App\QueryFilter\QueryArgumentPhaser;
 
 class WhereFilter
 {

@@ -79,12 +79,12 @@ class QueryArgumentPhaser
 
     public function __get($name)
     {
-        $methond = "get" . ucfirst($name);
-        if(!method_exists($this,$methond)){
+        $method = "get" . ucfirst($name);
+        if(!method_exists($this,$method)){
             throw new \InvalidArgumentException("{$name} property not found.");
         }
 
-        return $this->$methond();
+        return $this->$method();
     }
 
 

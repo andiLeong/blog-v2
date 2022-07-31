@@ -2,6 +2,8 @@
 
 namespace App\QueryFilter;
 
+use App\QueryFilter\Filters\SpecialFilter;
+use App\QueryFilter\Filters\WhereFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 

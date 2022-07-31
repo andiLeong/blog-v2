@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Models;
+namespace App\QueryFilter;
 
-use App\QueryFilter\OrderQueryFilter;
-use App\QueryFilter\QueryFilterManager;
 use Illuminate\Database\Eloquent\Builder;
 
 trait Filterable
