@@ -15,8 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-         \App\Models\User::factory(10)->create();
+        \App\Models\User::factory(10)->create();
         \App\Models\Post::factory(50)->create();
+        \App\Models\Order::factory(100)->create();
         $gallery = Gallery::factory()->create();
         \App\Models\File::factory(50)->create([
             'fileable_id' => $gallery->id,
