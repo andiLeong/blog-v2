@@ -15,12 +15,7 @@ trait Filterable
             return $query;
         }
 
-        $request = collect($request ?? request()->all())->filter(fn($key) => !is_null($key));
-        $filterOption = collect($this->getFilter())->intersectByKeys($request);
-
-//        dd(collect(request()->all())->filter());
-//        $filterOption = $this->getFilter();
-        $filters = new QueryFilterManager($query, $filterOption);
+        $filters = new QueryFilterManager($query, $this->getFilter(), $request);
         return $filters->apply();
 
 //        if(!method_exists($this,'getFilter')){
@@ -39,7 +34,7 @@ trait Filterable
             return $query;
         }
 
-        $orderFilters = new OrderQueryFilter($query,$this->getOrderFilter());
+        $orderFilters = new OrderQueryFilter($query, $this->getOrderFilter());
         return $orderFilters->apply();
     }
 }

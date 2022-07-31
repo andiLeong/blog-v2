@@ -16,13 +16,24 @@ class QueryFilterManager
     /**
      * @var array|null
      */
-    private $filtersOption;
+    private $request;
+    /**
+     * @var array
+     */
+    private $filterOption;
 
 
-    public function __construct(Builder $query, array|Collection $filtersOption)
+    /**
+     * QueryFilterManager constructor.
+     * @param Builder $query
+     * @param array $filterOption
+     * @param array|null $request
+     */
+    public function __construct(Builder $query, array $filterOption, array $request = null)
     {
         $this->query = $query;
-        $this->filtersOption = $filtersOption;
+        $this->request = $request;
+        $this->filterOption = $filterOption;
     }
 
     /**
@@ -32,7 +43,7 @@ class QueryFilterManager
      */
     public function apply()
     {
-        $this->filtersOption()
+        $this->getSharedOption()
             ->filter(fn($filter) => is_array($filter))
             ->each(fn($filterOption, $key) => $this->attachQuery($filterOption, $key));
 
@@ -64,15 +75,29 @@ class QueryFilterManager
 
 
     /**
-     * normalize the filter option to a collection
+     * get the both shared option key and request key
+     * eg: when request have query string foo=bar&baz=1
+     * but in our filter option we only key of foo
+     * so we only response to foo filter
+     *
      * @return Collection
      */
-    public function filtersOption(): Collection
+    public function getSharedOption(): Collection
     {
-        if ($this->filtersOption instanceof Collection) {
-            return $this->filtersOption;
-        }
-        return collect($this->filtersOption);
+        return collect($this->filterOption)
+            ->intersectByKeys($this->removeNullFromRequest());
+    }
+    /**
+     *  remove any null value from the request
+     *
+     * @return array
+     */
+    public function removeNullFromRequest()
+    {
+        return array_filter(
+            $this->request ?? request()->all(),
+            fn($request) => !is_null($request)
+        );
     }
 
 
