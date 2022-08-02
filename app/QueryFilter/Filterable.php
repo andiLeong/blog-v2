@@ -9,30 +9,23 @@ trait Filterable
 
     public function scopeFilters(Builder $query, array $request = null): Builder
     {
-        if (!method_exists($this, 'getFilter')) {
-            return $query;
-        }
-
         $filters = new QueryFilterManager($query, $this->getFilter(), $request);
         return $filters->apply();
+    }
 
-//        if(!method_exists($this,'getFilter')){
-//            return $query;
-//        }
-//
-//        $request = collect($request ?? request()->all())->filter();
-//        $this->getFilter()->intersectByKeys($request)->each->apply($query);
-//
-//        return $query;
+    public function getFilter()
+    {
+        throw new \LogicException('Please implements getFilter method');
     }
 
     public function scopeOrderFilters(Builder $query): Builder
     {
-        if (!method_exists($this, 'getOrderFilter')) {
-            return $query;
-        }
-
         $orderFilters = new OrderQueryFilter($query, $this->getOrderFilter());
         return $orderFilters->apply();
+    }
+
+    public function getOrderFilter()
+    {
+        throw new \LogicException('Please implements getOrderFilter method');
     }
 }

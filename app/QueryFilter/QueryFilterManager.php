@@ -19,6 +19,7 @@ class QueryFilterManager
      * @var array|null
      */
     private $request;
+
     /**
      * @var array
      */
@@ -89,6 +90,7 @@ class QueryFilterManager
         return collect($this->filterOption)
             ->intersectByKeys($this->removeNullFromRequest());
     }
+
     /**
      *  remove any null value from the request
      *
@@ -101,6 +103,5 @@ class QueryFilterManager
             fn($request) => !is_null($request)
         );
     }
-
 
 }

@@ -8,11 +8,7 @@ class SpecialFilter
 {
 
     public $clauses = ['whereIn', 'whereBetween'];
-    /**
-     * @var QueryArgumentPhaser
-     */
-    private $parser;
-    private $query;
+
     /**
      * @var array
      */
@@ -23,14 +19,16 @@ class SpecialFilter
      * @param $query
      * @param QueryArgumentPhaser $parser
      */
-    public function __construct($query,QueryArgumentPhaser $parser)
+    public function __construct(private $query, private QueryArgumentPhaser $parser)
     {
-        $this->parser = $parser;
-        $this->query = $query;
-
         $this->option = $this->parser->getOption();
     }
 
+    /**
+     * apply filter to the query
+     *
+     * @return mixed
+     */
     public function filter()
     {
         if ($this->shouldFilter()) {
@@ -42,9 +40,14 @@ class SpecialFilter
         return $this->query;
     }
 
+    /**
+     * decide if we should filter based on the option
+     *
+     * @return bool
+     */
     public function shouldFilter()
     {
-        return isset($this->option['clause']) && in_array($this->option['clause'],$this->clauses);
+        return isset($this->option['clause']) && in_array($this->option['clause'], $this->clauses);
     }
 
     public function clause()

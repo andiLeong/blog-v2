@@ -21,12 +21,6 @@ class Order extends Model
 
     public function getFilter()
     {
-
-//        \DB::listen(function ($query){
-//            dump($query->sql);
-//            dump($query->bindings);
-//        });
-
         return [
             'number' => [],
             'country' => [],

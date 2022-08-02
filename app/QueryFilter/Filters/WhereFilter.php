@@ -6,24 +6,22 @@ use App\QueryFilter\QueryArgumentPhaser;
 
 class WhereFilter
 {
-    /**
-     * @var QueryArgumentPhaser
-     */
-    private $parser;
-    private $query;
-
 
     /**
      * WhereFilter constructor.
      * @param $query
      * @param QueryArgumentPhaser $parser
      */
-    public function __construct($query, QueryArgumentPhaser $parser)
+    public function __construct(private $query, private QueryArgumentPhaser $parser)
     {
-        $this->parser = $parser;
-        $this->query = $query;
+        //
     }
 
+    /**
+     * apply filter to the query
+     *
+     * @return mixed
+     */
     public function filter()
     {
         if ($this->shouldFilter()) {
@@ -34,6 +32,11 @@ class WhereFilter
         return $this->query;
     }
 
+    /**
+     * decide if we should filter based on the option
+     *
+     * @return bool
+     */
     public function shouldFilter()
     {
         $option = $this->parser->getOption();
