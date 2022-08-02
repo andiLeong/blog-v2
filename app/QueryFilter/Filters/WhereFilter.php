@@ -24,10 +24,9 @@ class WhereFilter
      */
     public function filter()
     {
+        $arg = [$this->parser->column, $this->parser->operator, $this->parser->value];
         if ($this->shouldFilter()) {
-            $this->query->where(
-                $this->parser->column, $this->parser->operator, $this->parser->value
-            );
+            $this->query->where(...$arg);
         }
         return $this->query;
     }

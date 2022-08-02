@@ -113,9 +113,68 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
+    public function it_can_filter_the_by_not_between()
+    {
+        $this->withoutExceptionHandling();
+        $order = create(Order::class,['price' => 100]);
+        $order1 = create(Order::class,['price' => 10]);
+        $order2 = create(Order::class,['price' => 99]);
+
+        $this->getOrder(['price_not_between' => [1,99]])
+            ->assertSee($order->customer)
+            ->assertDontSee($order2->customer)
+            ->assertDontSee($order1->customer);
+    }
+
+    /** @test */
+    public function it_can_filter_using_where_not_in()
+    {
+        $this->withoutExceptionHandling();
+        $canada = create(Order::class,['country' => 'Canada']);
+        $china = create(Order::class,['country' => 'China']);
+        $india = create(Order::class,['country' => 'India']);
+        $this->getOrder(['country_not_in' => [$china->country,$india->country]])
+            ->assertDontSee($china->number)
+            ->assertDontSee($india->number)
+            ->assertSee($canada->number);
+    }
+
+    /** @test */
+    public function it_can_filter_using_where_date()
+    {
+        $this->withoutExceptionHandling();
+        $lastYear = create(Order::class,['created_at' => now()->subYear()]);
+        $currentYear = create(Order::class);
+        $this->getOrder(['year_is' => now()->subYear()->year])
+            ->assertDontSee($currentYear->number)
+            ->assertSee($lastYear->number);
+    }
+
+    /** @test */
+    public function it_can_filter_using_where_day()
+    {
+        $this->withoutExceptionHandling();
+        $twoDaysAgo = create(Order::class,['created_at' => now()->subDays(2) ]);
+        $today = create(Order::class);
+        $this->getOrder(['day_is' => now()->subDays(2)->day])
+            ->assertDontSee($today->number)
+            ->assertSee($twoDaysAgo->number);
+    }
+
+    /** @test */
+    public function it_can_filter_using_where_month()
+    {
+        $this->withoutExceptionHandling();
+        $lastMonth = create(Order::class,['created_at' => now()->subMonth() ]);
+        $currentMonth = create(Order::class);
+        $this->getOrder(['month_is' => now()->subMonth()->month])
+            ->assertDontSee($currentMonth->number)
+            ->assertSee($lastMonth->number);
+    }
+
+    /** @test */
     public function it_can_order_by_latest_timestamp()
     {
-//        $this->markTestSkipped();
         $old = create(Order::class,['created_at' => now()->subDays(5)]);
         $new = create(Order::class,['created_at' => now()]);
 

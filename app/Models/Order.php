@@ -43,9 +43,29 @@ class Order extends Model
                 'clause' => 'whereIn',
                 'column' => 'country'
             ],
+            'country_not_in' => [
+                'clause' => 'whereNotIn',
+                'column' => 'country'
+            ],
             'price_between' => [
                 'clause' => 'whereBetween',
                 'column' => 'price'
+            ],
+            'price_not_between' => [
+                'clause' => 'whereNotBetween',
+                'column' => 'price'
+            ],
+            'year_is' => [
+                'clause' => 'whereYear',
+                'column' => 'created_at'
+            ],
+            'day_is' => [
+                'clause' => 'whereDay',
+                'column' => 'created_at'
+            ],
+            'month_is' => [
+                'clause' => 'whereMonth',
+                'column' => 'created_at'
             ],
         ];
     }

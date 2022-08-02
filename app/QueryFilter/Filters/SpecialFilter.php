@@ -7,7 +7,7 @@ use App\QueryFilter\QueryArgumentPhaser;
 class SpecialFilter
 {
 
-    public $clauses = ['whereIn', 'whereBetween'];
+    public $clauses = ['whereIn','whereNotIn', 'whereBetween','whereNotBetween','whereYear','whereDay','whereMonth'];
 
     /**
      * @var array
