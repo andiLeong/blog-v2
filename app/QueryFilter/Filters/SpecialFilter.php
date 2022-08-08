@@ -4,7 +4,7 @@ namespace App\QueryFilter\Filters;
 
 use App\QueryFilter\QueryArgumentPhaser;
 
-class SpecialFilter
+class SpecialFilter implements Filters
 {
 
     public $clauses = ['whereIn','whereNotIn', 'whereBetween','whereNotBetween','whereYear','whereDay','whereMonth'];
@@ -45,7 +45,7 @@ class SpecialFilter
      *
      * @return bool
      */
-    public function shouldFilter()
+    public function shouldFilter() :bool
     {
         return isset($this->option['clause']) && in_array($this->option['clause'], $this->clauses);
     }

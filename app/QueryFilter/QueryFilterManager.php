@@ -4,6 +4,7 @@ namespace App\QueryFilter;
 
 use App\QueryFilter\Filters\SpecialFilter;
 use App\QueryFilter\Filters\WhereFilter;
+use App\QueryFilter\Filters\WhereNullFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
@@ -65,7 +66,8 @@ class QueryFilterManager
         $parser = new QueryArgumentPhaser($option, $key);
         $filters = [
             SpecialFilter::class,
-            WhereFilter::class
+            WhereFilter::class,
+            WhereNullFilter::class
         ];
 
         collect($filters)

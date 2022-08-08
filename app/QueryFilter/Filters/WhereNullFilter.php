@@ -1,20 +1,25 @@
 <?php
 
+
 namespace App\QueryFilter\Filters;
+
 
 use App\QueryFilter\QueryArgumentPhaser;
 
-class WhereFilter implements Filters
+class WhereNullFilter implements Filters
 {
 
+    private $option;
+    private $clauses = ['whereNull'];
+
     /**
-     * WhereFilter constructor.
+     * WhereNullFilter constructor.
      * @param $query
      * @param QueryArgumentPhaser $parser
      */
     public function __construct(private $query, private QueryArgumentPhaser $parser)
     {
-        //
+        $this->option = $this->parser->getOption();
     }
 
     /**
@@ -24,9 +29,8 @@ class WhereFilter implements Filters
      */
     public function filter()
     {
-        $arg = [$this->parser->column, $this->parser->operator, $this->parser->value];
         if ($this->shouldFilter()) {
-            $this->query->where(...$arg);
+            $this->query->whereNull($this->parser->column);
         }
         return $this->query;
     }
@@ -38,7 +42,6 @@ class WhereFilter implements Filters
      */
     public function shouldFilter() :bool
     {
-        $option = $this->parser->getOption();
-        return !isset($option['clause']);
+        return isset($this->option['clause']) && in_array($this->option['clause'], $this->clauses);
     }
 }

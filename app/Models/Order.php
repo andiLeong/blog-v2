@@ -67,6 +67,10 @@ class Order extends Model
                 'clause' => 'whereMonth',
                 'column' => 'created_at'
             ],
+            'update_at_is_null' => [
+                'clause' => 'whereNull',
+                'column' => 'updated_at'
+            ],
         ];
     }
 

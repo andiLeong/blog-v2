@@ -173,6 +173,17 @@ class ReadOrderTest extends TestCase
     }
 
     /** @test */
+    public function it_can_filter_using_where_null()
+    {
+        $this->withoutExceptionHandling();
+        $nullOrder = create(Order::class,['updated_at' => null ]);
+        $order = create(Order::class);
+        $this->getOrder(['update_at_is_null' => true])
+            ->assertDontSee($order->number)
+            ->assertSee($nullOrder->number);
+    }
+
+    /** @test */
     public function it_can_order_by_latest_timestamp()
     {
         $old = create(Order::class,['created_at' => now()->subDays(5)]);
