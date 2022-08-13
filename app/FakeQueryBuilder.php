@@ -3,6 +3,7 @@
 namespace App;
 
 
+use Closure;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\Grammar;
@@ -53,26 +54,44 @@ class FakeQueryBuilder extends Builder
 
     public function where($column, $operator = null, $value = null, $boolean = 'and')
     {
+        if (is_array($column)) {
+            foreach ($column as $col => $value) {
+                $this
+                    ->assignWheres($col, $value, '=', $boolean)
+                    ->assignBindings($value);
+            }
+            return $this;
+        }
+
+
+        if ($column instanceof Closure && is_null($operator)) {
+            $column($this);
+            return $this;
+        }
+
         if (func_num_args() === 2) {
             [$value, $operator] = [$operator, '='];
         }
 
         if (is_null($value)) {
-            return $this->whereNull($column, $boolean );
+            return $this->whereNull($column, $boolean);
         }
 
-        $this->wheres[] = [
-            'operator' => $operator,
-            'column' => $column,
-            'boolean' => $boolean,
-            'value' => $value,
-            'type' => 'Basic',
-        ];
-        $this->bindings['where'][] = $value;
+
+        $this
+            ->assignWheres($column, $value, $operator, $boolean, 'Basic')
+            ->assignBindings($value);
 
 
         return $this;
 
+    }
+
+    public function __call($method, $parameters)
+    {
+        if(str_starts_with($method,'where')){
+            return $this->dynamicWheres($parameters, $method);
+        }
     }
 
     public function whereNull($columns, $boolean = 'and', $not = false)
@@ -99,6 +118,7 @@ class FakeQueryBuilder extends Builder
         }
         $this->columns = $columns;
 
+//        dd($this->wheres);
 //        dd($this->tosQl());
         $res = $this->connection->select(
             $this->toSql(),
@@ -111,6 +131,55 @@ class FakeQueryBuilder extends Builder
     public function toSql()
     {
         return $this->grammar->compileSelect($this);
+    }
+
+    /**
+     * @param $column
+     * @param $value
+     * @param string $operator
+     * @param string $boolean
+     * @param string $type
+     * @return FakeQueryBuilder
+     */
+    protected function assignWheres($column, $value, $operator = '=', $boolean = 'and', $type = 'Basic'): FakeQueryBuilder
+    {
+        $this->wheres[] = compact('operator', 'column', 'boolean', 'type', 'value');
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @param string $bind
+     * @return FakeQueryBuilder
+     */
+    protected function assignBindings($value, $bind = 'where'): FakeQueryBuilder
+    {
+        $this->bindings[$bind][] = $value;
+        return $this;
+    }
+
+    /**
+     * @param array $parameters
+     * @param string $method
+     * @return FakeQueryBuilder
+     */
+    protected function dynamicWheres(array $parameters, string $method): FakeQueryBuilder
+    {
+        if (count($parameters) === 1) {
+            $value = $parameters[0];
+            $operator = '=';
+        } else if (count($parameters) === 2) {
+            $operator = $parameters[0];
+            $value = $parameters[1];
+        } else {
+            throw new \InvalidArgumentException('only 2 arguments are needed.');
+        }
+
+        $column = substr($method, 5);
+
+        return $this
+            ->assignWheres($column, $value, $operator)
+            ->assignBindings($value);
     }
 
 }

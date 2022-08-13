@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 
-    $pdo = new \PDO();
+
+
     $mysqlConnection = new MySqlConnection($pdo);
 
     $queryBuilder = new Builder($mysqlConnection);

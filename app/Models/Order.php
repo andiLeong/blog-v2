@@ -11,11 +11,14 @@ class Order extends Model
 {
     use HasFactory;
     use Filterable;
+    protected $guarded = [];
 
     protected static function booted()
     {
         static::creating(function ($order) {
-            $order->number = Str::random(40);
+            if (!array_key_exists('number', $order->attributes)) {
+                $order->number = Str::random(40);
+            }
         });
     }
 

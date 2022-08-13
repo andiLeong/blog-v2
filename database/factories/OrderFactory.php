@@ -29,6 +29,7 @@ class OrderFactory extends Factory
             'paid' => collect([0,1])->random(),
             'country' => collect(['American','Malaysia','India','China','Singapore','Russia','United Kingdom','Canada','Brazil'])->random(),
             'customer' => $this->faker->name(),
+            'number' => Str::random(10),
         ];
     }
 }

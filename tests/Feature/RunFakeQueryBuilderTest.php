@@ -99,4 +99,63 @@ class RunFakeQueryBuilderTest extends TestCase
         $this->assertNull($res2[0]->updated_at);
 
     }
+
+    /** @test */
+    public function it_can_get_a_list_of_results_when_pass_array_to_where_builder()
+    {
+        $orders = create(Order::class,['number' => 99,'country' => 'foo'],2);
+        create(Order::class);
+        $res = $this->queryBuilder
+            ->from('orders')
+            ->where([
+                'number' => '99',
+                'country' => 'foo',
+            ])
+            ->get();
+
+        $this->assertEquals(2,$res->count());
+        $this->assertEquals($res[0]->country,$orders[0]->country);
+
+    }
+
+    /** @test */
+    public function it_can_get_a_list_of_results_when_pass_closure_to_where_builder()
+    {
+        $orders = create(Order::class,['number' => 99,'country' => 'foo'],2);
+        create(Order::class);
+        $res = $this->queryBuilder
+            ->from('orders')
+            ->where(function($query){
+                return $query->where('country','foo')
+                    ->where('number',99);
+            })
+            ->get();
+
+        $this->assertEquals(2,$res->count());
+        $this->assertEquals($res[0]->country,$orders[0]->country);
+
+    }
+
+    /** @test */
+    public function it_can_get_a_list_of_results_with_dynamic_where()
+    {
+        $orders = create(Order::class,['number' => 99,'country' => 'foo'],2);
+        create(Order::class);
+        $res = $this->queryBuilder
+            ->from('orders')
+            ->whereNumber(99)
+            ->get();
+
+        $this->assertEquals(2,$res->count());
+        $this->assertEquals($res[0]->country,$orders[0]->country);
+
+        $res2 = $this->queryBuilder
+            ->from('orders')
+            ->whereCountry('like', '%fo%')
+            ->get();
+
+        $this->assertEquals(2,$res2->count());
+        $this->assertEquals($res2[0]->country,$orders[0]->country);
+
+    }
 }
