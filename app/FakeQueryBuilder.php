@@ -19,6 +19,7 @@ class FakeQueryBuilder extends Builder
         'where' => [],
     ];
 
+    public $limit;
     public $from;
     public $connection;
     public $grammar;
@@ -63,7 +64,6 @@ class FakeQueryBuilder extends Builder
             return $this;
         }
 
-
         if ($column instanceof Closure && is_null($operator)) {
             $column($this);
             return $this;
@@ -77,11 +77,9 @@ class FakeQueryBuilder extends Builder
             return $this->whereNull($column, $boolean);
         }
 
-
         $this
             ->assignWheres($column, $value, $operator, $boolean, 'Basic')
             ->assignBindings($value);
-
 
         return $this;
 
@@ -90,7 +88,7 @@ class FakeQueryBuilder extends Builder
     public function whereIn($column, $values, $boolean = 'and', $not = false)
     {
         $type = $not ? 'NotIn' : 'In';
-        $this->wheres[] = compact( 'column', 'boolean', 'type', 'values');
+        $this->wheres[] = compact('column', 'boolean', 'type', 'values');
         return $this
             ->assignBindings($values);
     }
@@ -98,7 +96,7 @@ class FakeQueryBuilder extends Builder
     public function whereBetween($column, iterable $values, $boolean = 'and', $not = false)
     {
         $type = 'between';
-        $this->wheres[] = compact( 'column', 'boolean', 'type', 'values');
+        $this->wheres[] = compact('column', 'boolean', 'type', 'values');
         return $this
             ->assignBindings($values);
     }
@@ -117,6 +115,21 @@ class FakeQueryBuilder extends Builder
         }
 
         return $this;
+    }
+
+    public function first($columns = ['*'])
+    {
+        $this->limit = 1;
+        return $this->get($columns)->first();
+    }
+
+    public function find($id, $columns = ['*'])
+    {
+        if(is_array($id)){
+            return $this->whereIn('id',$id)->get($columns);
+        }
+
+        return $this->where('id',$id)->get($columns)->first();
     }
 
     public function get($columns = ['*'])

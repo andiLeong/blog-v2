@@ -190,4 +190,37 @@ class RunFakeQueryBuilderTest extends TestCase
         $this->assertEquals($res[0]->country,$order1->country);
         $this->assertEquals($res[1]->country,$order2->country);
     }
+
+    /** @test */
+    public function it_can_get_the_first_record_by_using_first()
+    {
+        $order1 = create(Order::class,['country' => 'foo']);
+        $order2 = create(Order::class,['country' => 'bar']);
+        $res = $this->queryBuilder
+            ->from('orders')
+            ->first();
+
+        $this->assertEquals($res->country,$order1->country);
+        $this->assertNotEquals($res->country,$order2->country);
+    }
+
+    /** @test */
+    public function it_can_get_the_find_records()
+    {
+        $order1 = create(Order::class,['country' => 'foo']);
+        $order2 = create(Order::class,['country' => 'bar']);
+        $res = $this->queryBuilder
+            ->from('orders')
+            ->find([1,2]);
+
+        $this->assertEquals(2,$res->count());
+        $this->assertEquals($res[0]->country,$order1->country);
+        $this->assertEquals($res[1]->country,$order2->country);
+
+        $res2 = $this->queryBuilder
+            ->from('orders')
+            ->find(2);
+
+        $this->assertEquals($res2->country,$order2->country);
+    }
 }
