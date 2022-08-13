@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
 
 
-
     $mysqlConnection = new MySqlConnection($pdo);
 
     $queryBuilder = new Builder($mysqlConnection);
@@ -16,10 +15,12 @@ Route::get('/', function () {
     $queryBuilder = $queryBuilder
 //        ->select(['id','country','id'])
         ->from('orders')
-        ->where('id','>',3)
+//        ->where('id','>',3)
+            ->whereBetween('amount',[0,9999])
+        ->whereIn('acount',['foo','bar'])
 
 //        ->toSql()
-        ->get(['id','country'])
+//        ->get(['id','country'])
     ;
 
     dd($queryBuilder);

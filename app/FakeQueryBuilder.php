@@ -87,12 +87,22 @@ class FakeQueryBuilder extends Builder
 
     }
 
-    public function __call($method, $parameters)
+    public function whereIn($column, $values, $boolean = 'and', $not = false)
     {
-        if(str_starts_with($method,'where')){
-            return $this->dynamicWheres($parameters, $method);
-        }
+        $type = $not ? 'NotIn' : 'In';
+        $this->wheres[] = compact( 'column', 'boolean', 'type', 'values');
+        return $this
+            ->assignBindings($values);
     }
+
+    public function whereBetween($column, iterable $values, $boolean = 'and', $not = false)
+    {
+        $type = 'between';
+        $this->wheres[] = compact( 'column', 'boolean', 'type', 'values');
+        return $this
+            ->assignBindings($values);
+    }
+
 
     public function whereNull($columns, $boolean = 'and', $not = false)
     {
@@ -118,7 +128,7 @@ class FakeQueryBuilder extends Builder
         }
         $this->columns = $columns;
 
-//        dd($this->wheres);
+//        dd($this);
 //        dd($this->tosQl());
         $res = $this->connection->select(
             $this->toSql(),
@@ -154,7 +164,14 @@ class FakeQueryBuilder extends Builder
      */
     protected function assignBindings($value, $bind = 'where'): FakeQueryBuilder
     {
-        $this->bindings[$bind][] = $value;
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                $this->bindings[$bind][] = $v;
+            }
+        } else {
+            $this->bindings[$bind][] = $value;
+        }
+
         return $this;
     }
 
@@ -182,4 +199,11 @@ class FakeQueryBuilder extends Builder
             ->assignBindings($value);
     }
 
+
+    public function __call($method, $parameters)
+    {
+        if (str_starts_with($method, 'where')) {
+            return $this->dynamicWheres($parameters, $method);
+        }
+    }
 }

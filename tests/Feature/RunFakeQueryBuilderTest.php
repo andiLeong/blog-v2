@@ -158,4 +158,36 @@ class RunFakeQueryBuilderTest extends TestCase
         $this->assertEquals($res2[0]->country,$orders[0]->country);
 
     }
+
+    /** @test */
+    public function it_can_get_a_list_of_results_with_where_in()
+    {
+        $order1 = create(Order::class,['country' => 'foo']);
+        $order2 = create(Order::class,['country' => 'bar']);
+        create(Order::class);
+        $res = $this->queryBuilder
+            ->from('orders')
+            ->whereIn('country',['foo','bar'])
+            ->get();
+
+        $this->assertEquals(2,$res->count());
+        $this->assertEquals($res[0]->country,$order1->country);
+        $this->assertEquals($res[1]->country,$order2->country);
+    }
+
+    /** @test */
+    public function it_can_get_a_list_of_results_with_where_between()
+    {
+        $order1 = create(Order::class,['price' => 99]);
+        $order2 = create(Order::class,['price' => 10]);
+        $order3 = create(Order::class,['price' => 9]);
+        $res = $this->queryBuilder
+            ->from('orders')
+            ->whereIn('price',[10,99])
+            ->get();
+
+        $this->assertEquals(2,$res->count());
+        $this->assertEquals($res[0]->country,$order1->country);
+        $this->assertEquals($res[1]->country,$order2->country);
+    }
 }
