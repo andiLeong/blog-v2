@@ -16,7 +16,15 @@ class FakeQueryBuilder extends Builder
     public $columns = [];
     public $wheres = [];
     public $bindings = [
+        'select' => [],
+        'from' => [],
+        'join' => [],
         'where' => [],
+        'groupBy' => [],
+        'having' => [],
+        'order' => [],
+        'union' => [],
+        'unionOrder' => [],
     ];
 
     public $limit;
@@ -130,6 +138,34 @@ class FakeQueryBuilder extends Builder
         }
 
         return $this->where('id',$id)->get($columns)->first();
+    }
+
+    public function insert(array $values, $sequence = null)
+    {
+        $sql = $this->grammar->compileInsertGetId($this, $values, $sequence);
+        $values = array_values($values);
+        return $this->processor->processInsertGetId($this, $sql, $values, $sequence);
+    }
+
+    public function update(array $values)
+    {
+        $sql = $this->grammar->compileUpdate($this, $values);
+        $values = $this->grammar->prepareBindingsForUpdate($this->bindings, $values);
+        return $this->connection->update($sql, $values);
+
+    }
+
+    public function delete($id = null)
+    {
+        if (! is_null($id)) {
+            $this->where($this->from.'.id', '=', $id);
+        }
+
+
+        return $this->connection->delete(
+            $this->grammar->compileDelete($this),
+            $this->grammar->prepareBindingsForDelete($this->bindings)
+        );
     }
 
     public function get($columns = ['*'])
