@@ -11,6 +11,7 @@ class Order extends Model
 {
     use HasFactory;
     use Filterable;
+
     protected $guarded = [];
 
     protected static function booted()
