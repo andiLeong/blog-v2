@@ -32,15 +32,15 @@ class BackupDatabase extends Command
     public function handle()
     {
         $path = $this->getBackupPath();
-        $filePath = $path . now()->format('Y-m-d') . ".gz";
+        $filePath = $path . '/' . $this->prefix . now()->format('Y-m-d') . ".gz";
 //        $path = storage_path() . "/app/backup/" . $filename;
 
         $command = $this->mysqlDump($filePath);
 
         $output = null;
         $status = null;
-        exec($command,$output,$status);
-        if($status == 0){
+        exec($command, $output, $status);
+        if ($status == 0) {
             $this->clearOldBackUp();
         }
         $this->info("done backup mysql");
@@ -102,6 +102,6 @@ class BackupDatabase extends Command
      */
     protected function getBackupPath(): string
     {
-        return getenv('HOME') . "/database-backup/" . $this->prefix;
+        return getenv('HOME') . "/database-backup";
     }
 }
