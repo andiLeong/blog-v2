@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Symfony\Component\Finder\Finder;
 
 class BackupDatabase extends Command
 {
@@ -12,7 +12,7 @@ class BackupDatabase extends Command
      *
      * @var string
      */
-    protected $signature = 'database:backup';
+    protected $signature = 'db:backup';
 
     /**
      * The console command description.
@@ -21,6 +21,9 @@ class BackupDatabase extends Command
      */
     protected $description = 'Backup database';
 
+    public $prefix = 'mysql-backup-';
+    public $daysToKeep = 3;
+
     /**
      * Execute the console command.
      *
@@ -28,16 +31,77 @@ class BackupDatabase extends Command
      */
     public function handle()
     {
-        $filename = "backup-" . Carbon::now()->format('Y-m-d') . ".gz";
+        $path = $this->getBackupPath();
+        $filePath = $path . now()->format('Y-m-d') . ".gz";
+//        $path = storage_path() . "/app/backup/" . $filename;
 
-        $command = "mysqldump --user=" . env('DB_USERNAME') ." --password=" . env('DB_PASSWORD') . " --host=" . env('DB_HOST') . " " . env('DB_DATABASE') . "  | gzip > " . storage_path() . "/app/backup/" . $filename;
+        $command = $this->mysqlDump($filePath);
 
-        $returnVar = NULL;
-        $output  = NULL;
-
-        exec($command, $output, $returnVar);
-        dump($output);
-        dump($returnVar);
+        $output = null;
+        $status = null;
+        exec($command,$output,$status);
+        if($status == 0){
+            $this->clearOldBackUp();
+        }
         $this->info("done backup mysql");
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    protected function mysqlDump(string $path): string
+    {
+        $user = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+        $host = env('DB_HOST');
+        $database = env('DB_DATABASE');
+        return "mysqldump --user=$user --password='$password' --host=$host $database | gzip > $path";
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    protected function startsWithPrefix($file): bool
+    {
+        return str_starts_with($file->getFilenameWithoutExtension(), $this->prefix);
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    protected function olderThan($file): bool
+    {
+        $date = str_replace($this->prefix, '', $file->getFilenameWithoutExtension());
+        return now()->diff($date)->days >= $this->daysToKeep;
+    }
+
+    /**
+     * clear old database backup gz
+     */
+    protected function clearOldBackUp(): void
+    {
+        $files = Finder::create()
+            ->files()
+            ->name("*.gz")
+            ->in($this->getBackupPath())
+            ->filter(fn($file) => $this->startsWithPrefix($file))
+            ->filter(fn($file) => $this->olderThan($file));
+
+
+        foreach ($files as $file) {
+            unlink($file->getRealPath());
+        }
+    }
+
+    /**
+     * get the mysql backup path
+     * @return string
+     */
+    protected function getBackupPath(): string
+    {
+        return getenv('HOME') . "/" . $this->prefix;
     }
 }
