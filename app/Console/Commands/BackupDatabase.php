@@ -102,6 +102,6 @@ class BackupDatabase extends Command
      */
     protected function getBackupPath(): string
     {
-        return getenv('HOME') . "/" . $this->prefix;
+        return getenv('HOME') . "/database-backup/" . $this->prefix;
     }
 }
