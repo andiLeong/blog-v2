@@ -32,8 +32,8 @@ class BackupDatabase extends Command
     public function handle()
     {
         $path = $this->getBackupPath();
-        $filePath = $path . '/' . $this->prefix . now()->format('Y-m-d') . ".gz";
-//        $path = storage_path() . "/app/backup/" . $filename;
+        $fileName = $this->prefix . now()->format('Y-m-d');
+        $filePath = "$path/$fileName.gz";
 
         $command = $this->mysqlDump($filePath);
 
