@@ -2,8 +2,7 @@
 
 namespace App\Practice\Observers;
 
-
-class Foo implements Subject
+class Foo implements Observable
 {
     public $thing;
 

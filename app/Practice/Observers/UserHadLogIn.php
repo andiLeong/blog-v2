@@ -2,8 +2,7 @@
 
 namespace App\Practice\Observers;
 
-
-class Observer
+class UserHadLogIn implements Subject
 {
     private $observers = [];
 
