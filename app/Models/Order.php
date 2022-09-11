@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Practice\Pagination\Paginator;
 use App\QueryFilter\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Order extends Model
@@ -85,5 +87,21 @@ class Order extends Model
             'direction' => 'direction'
             // order_by[]=created_at&order_by[]=customer&direction[]=desc&direction[]=asc
         ];
+    }
+
+    public function paginator($perPage = null,$pageName = 'page')
+    {
+        $perPage ??= $this->getPerPage();
+        $page =request()->has($pageName) ? request()->get($pageName) : 1 ;
+        if(!is_numeric($page)){
+           $page = 1;
+        }
+        $page = (int) max($page,1);
+
+        $offset = $perPage * $page - $perPage;
+        $orders = DB::select("select * from {$this->getTable()} limit $perPage offset $offset");
+        $total = $this->count();
+
+        return new Paginator($orders,$perPage,$total,$page,$pageName);
     }
 }
