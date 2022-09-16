@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Unit;
+
 use App\Models\Post;
 use App\Models\User;
 use App\Practice\Observers\Observer\NotifyAllSubscribers;
@@ -7,6 +9,7 @@ use App\Practice\Observers\Observer\RecordUserLoginDetails;
 use App\Practice\Observers\Observer\SendEmailToAdmin;
 use App\Practice\Observers\Subject\PostWasCreated;
 use App\Practice\Observers\Subject\UserHadLogIn;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class ObserverTest extends TestCase
@@ -33,7 +36,7 @@ class ObserverTest extends TestCase
         $this->assertEquals(get_class($this->user),$bar->user);
 
         $post = new Post(['body' => 'hi']);
-        $postWasPublished = new PostWasCreated($post);
+        $postWasPublished = new PostWasCreated($post,'stub');
         $postWasPublished->add($notify = new NotifyAllSubscribers())->fire();
         $this->assertEquals(get_class($post),$notify->post);
     }

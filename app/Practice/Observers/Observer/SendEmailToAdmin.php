@@ -12,5 +12,6 @@ class SendEmailToAdmin implements Observable
     public function handle(Subject $subject)
     {
        $this->user = get_class($subject->user);
+       return true;
     }
 }

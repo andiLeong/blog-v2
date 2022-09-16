@@ -8,7 +8,7 @@ class PostWasCreated implements Subject
 {
     use Subjectable;
 
-    public function __construct(public Post $post)
+    public function __construct(public Post $post,public String $stub)
     {
         //
     }
