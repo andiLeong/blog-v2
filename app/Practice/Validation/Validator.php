@@ -21,13 +21,10 @@ class Validator
 
     public function validate(array $rules)
     {
-
-        $results = collect($rules)->flatMap(function ($rule, $key) {
-            if (is_string($rule)) {
-                $rule = explode('|', $rule);
-            }
-            return $this->createRule($rule, $key);
-        })
+        $results = collect($rules)
+            ->flatMap(fn($rule, $key) => $this->createRule(
+                $this->parseRuleToArray($rule), $key
+            ))
             ->reduce(function ($carry, $rule) {
                 $result = $rule->check();
                 if (!$result) {
@@ -45,20 +42,18 @@ class Validator
         return $this->request->only($this->keys);
     }
 
+    /**
+     * create a rule collection that contains a rule instance
+     * @param array $rules
+     * @param $key
+     * @return array
+     */
     private function createRule(array $rules, $key): array
     {
-
-        return array_map(function ($rule) use ($key) {
-
-            if (is_object($rule)) {
-                return $rule;
-            }
-
-            return $this
-                ->getRuleFactory($rule,$key,$this->request->get($key))
-                ->make();
-
-        }, $rules);
+        return array_map(
+            fn($rule) => $this->buildRuleInstance($rule, $key),
+            $rules
+        );
 
     }
 
@@ -68,8 +63,37 @@ class Validator
      * @param $value
      * @return RuleFactory
      */
-    function getRuleFactory($rule,$key,$value): RuleFactory
+    function getRuleFactory($rule, $key, $value): RuleFactory
     {
-        return new RuleFactory($rule,$key,$value);
+        return new RuleFactory($rule, $key, $value);
+    }
+
+    /**
+     * convert a string rule to an array
+     * @param $rule
+     * @return false|mixed|string[]
+     */
+    function parseRuleToArray($rule)
+    {
+        if (is_string($rule)) {
+            $rule = explode('|', $rule);
+        }
+        return $rule;
+    }
+
+    /**
+     * @param $rule
+     * @param $key
+     * @return Rules\Rule|mixed
+     */
+    function buildRuleInstance($rule, $key)
+    {
+        if (is_object($rule)) {
+            return $rule;
+        }
+
+        return $this
+            ->getRuleFactory($rule, $key, $this->request->get($key))
+            ->make();
     }
 }
