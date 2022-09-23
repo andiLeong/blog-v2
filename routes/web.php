@@ -10,6 +10,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', \App\Http\Controllers\LoginController::class);
 Route::post('/logout', \App\Http\Controllers\LogoutController::class);
 
-
+Route::get('/validate', \App\Http\Controllers\ValidationController::class);
 
 
