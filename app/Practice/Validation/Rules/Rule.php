@@ -16,6 +16,18 @@ abstract class Rule
         $this->key = $key;
     }
 
+    public function setValue($value)
+    {
+        $this->value = $value;
+        return $this;
+    }
+
+    public function setKey($key)
+    {
+        $this->key = $key;
+        return $this;
+    }
+
     public function key()
     {
        return $this->key;

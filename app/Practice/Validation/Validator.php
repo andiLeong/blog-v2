@@ -3,6 +3,7 @@
 namespace App\Practice\Validation;
 
 use App\Exceptions\CustomValidationException;
+use App\Practice\Validation\Rules\Rule;
 use Illuminate\Http\Request;
 
 class Validator
@@ -10,7 +11,7 @@ class Validator
 
     private $rules;
     private $request;
-    private $keys;
+    private $messages;
     private $hasErrors = false;
 
     public function __construct(Request $request, $rules = [])
@@ -19,8 +20,10 @@ class Validator
         $this->request = $request;
     }
 
-    public function validate(array $rules)
+    public function validate(array $rules, array $message = [])
     {
+        $this->messages = $message;
+
         $results = collect($rules)
             ->flatMap(fn($rule, $key) => $this->createRule(
                 $this->parseRuleToArray($rule), $key
@@ -29,17 +32,16 @@ class Validator
                 $result = $rule->check();
                 if (!$result) {
                     $this->hasErrors = true;
-                    $carry['errors'][$rule->key()][] = $rule->message();
+                    $carry['errors'][$rule->key()][] = $this->getMessageOf($rule);
                 }
                 return $carry;
             }, []);
-//        dump($results);
 
         if ($this->hasErrors) {
             throw new CustomValidationException($results);
         }
 
-        return $this->request->only($this->keys);
+        return $this->request->only(array_keys($rules));
     }
 
     /**
@@ -54,7 +56,6 @@ class Validator
             fn($rule) => $this->buildRuleInstance($rule, $key),
             $rules
         );
-
     }
 
     /**
@@ -84,16 +85,33 @@ class Validator
     /**
      * @param $rule
      * @param $key
-     * @return Rules\Rule|mixed
+     * @return Rules\Rule
      */
-    function buildRuleInstance($rule, $key)
+    function buildRuleInstance($rule, $key): Rule
     {
-        if (is_object($rule)) {
+        if ($rule instanceof Rule) {
+            $rule->setValue($this->request->get($key))
+                ->setKey($key);
             return $rule;
         }
 
         return $this
             ->getRuleFactory($rule, $key, $this->request->get($key))
             ->make();
+    }
+
+    /**
+     * get an error message of a rule instance
+     * @param $rule
+     * @return mixed
+     */
+    function getMessageOf($rule)
+    {
+        $messageKey = $rule->key() . "." . strtolower(class_basename($rule));
+        if (array_key_exists($messageKey, $this->messages)) {
+            return $this->messages[$messageKey];
+        }
+
+        return $rule->message();
     }
 }
