@@ -10,7 +10,7 @@ class ValidationController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $validator = new Validator($request);
+        $validator = new Validator($request->all());
         $data = $validator->validate([
             'name' => 'required|min:3|max:10',
             'email' => ['required', 'email'],

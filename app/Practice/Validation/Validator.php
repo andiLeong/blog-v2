@@ -5,7 +5,7 @@ namespace App\Practice\Validation;
 use App\Exceptions\CustomValidationException;
 use App\Practice\Validation\Rules\Rule;
 use Closure;
-use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class Validator
 {
@@ -13,8 +13,7 @@ class Validator
     private $hasErrors = false;
 
     public function __construct(
-        public Request $request,
-        private $rules = []
+        public array $data,
     )
     {
         //
@@ -40,7 +39,7 @@ class Validator
             throw new CustomValidationException($results);
         }
 
-        return $this->request->only(array_keys($rules));
+        return Arr::only($this->data, array_keys($rules));
     }
 
     /**
@@ -62,9 +61,9 @@ class Validator
      * @param $key
      * @return RuleFactory
      */
-    function getRuleFactory($rule, $key): RuleFactory
+    protected function getRuleFactory($rule, $key): RuleFactory
     {
-        return new RuleFactory($rule, $key, $this);
+        return new RuleFactory($rule, $key, $this->data);
     }
 
     /**
@@ -72,7 +71,7 @@ class Validator
      * @param $rule
      * @return false|mixed|string[]
      */
-    function parseRuleToArray($rule)
+    protected function parseRuleToArray($rule)
     {
         if (is_string($rule)) {
             $rule = explode('|', $rule);
@@ -85,13 +84,10 @@ class Validator
      * @param $key
      * @return Rule
      */
-    function buildRuleInstance($rule, $key)
+    protected function buildRuleInstance($rule, $key)
     {
-        $value = $this->request->get($key);
         if ($rule instanceof Rule) {
-            $rule->setValue($value)
-                ->setKey($key);
-            return $rule;
+            return tap($rule)->setProperty($this->data,$key);
         }
 
         $method = $rule instanceof Closure ? 'makeAnonymous' : 'make';
@@ -106,7 +102,7 @@ class Validator
      * @param $rule Rule
      * @return mixed
      */
-    function getMessageOf(Rule $rule)
+    protected function getMessageOf(Rule $rule): mixed
     {
         $messageKey = $rule->key() . "." . $rule->getBaseName();
         if (array_key_exists($messageKey, $this->messages)) {

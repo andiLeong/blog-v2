@@ -2,13 +2,13 @@
 
 namespace App\Practice\Validation\Rules;
 
-
 class RequiredIf extends Rule
 {
 
     public function check(): bool
     {
-        if(!is_null($this->request->get($this->arguments[0])) && is_null($this->value)){
+        $data = $this->getValue($this->arguments[0]);
+        if(!is_null($data) && is_null($this->value)){
             return false;
         }
 

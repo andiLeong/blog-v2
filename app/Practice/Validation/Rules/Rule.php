@@ -2,56 +2,58 @@
 
 namespace App\Practice\Validation\Rules;
 
-
-use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ReflectionClass;
 
 abstract class Rule
 {
-    protected Request $request;
-    protected $needRequestRules = [
-        'required_if'
-    ];
+//    protected $needRequestRules = [
+//        'required_if'
+//    ];
+
+    protected mixed $value;
 
     public function __construct(
         protected $key,
-        protected $value,
+        protected $data,
         protected $arguments = []
     )
     {
-        //
+        $this->value = $this->getValue();
     }
 
-    public function setValue($value)
+    public function setProperty($data,$key)
     {
-        $this->value = $value;
-        return $this;
-    }
-
-    public function setKey($key)
-    {
+        $this->data = $data;
         $this->key = $key;
-        return $this;
-    }
-
-    public function setRequest($rule,Request $request): Rule
-    {
-        if($this->needRequestDependency($rule)){
-            $this->request = $request;
-        }
+        $this->value = $this->getValue();
 
         return $this;
     }
 
-    public function needRequestDependency($name)
-    {
-        return in_array($name,$this->needRequestRules);
-    }
+//    public function setRequest($rule,Request $request): Rule
+//    {
+//        if($this->needRequestDependency($rule)){
+//            $this->request = $request;
+//        }
+//
+//        return $this;
+//    }
+//
+//    public function needRequestDependency($name)
+//    {
+//        return in_array($name,$this->needRequestRules);
+//    }
 
     public function key()
     {
-       return $this->key;
+        return $this->key;
+    }
+
+    public function getValue($key = null)
+    {
+        return Arr::get($this->data, $key ?? $this->key);
     }
 
     public function getBaseName()
@@ -64,6 +66,7 @@ abstract class Rule
     }
 
     abstract public function check(): bool;
+
     abstract public function message(): string;
 
 

@@ -7,11 +7,6 @@ use Illuminate\Support\Str;
 
 class RuleFactory
 {
-    private $name;
-    private $key;
-    private $value;
-    private $validator;
-
     /**
      * the name of the rule we are trying yo build instance
      * @param $name
@@ -19,25 +14,18 @@ class RuleFactory
      * the key of the validation checking
      * @param $key
      *
-     * the validator instance
-     * @param Validator $validator
+     * the data getting from the request
+     * @param $data
      *
-     * the value of the key comes from request
-     * @param null $value
      */
 
-    public function __construct($name, $key, Validator $validator,$value = null)
+    public function __construct(
+        private $name,
+        private $key,
+        private $data
+    )
     {
-        $this->name = $name;
-        $this->key = $key;
-        $this->validator = $validator;
-
-        if(is_null($value)){
-            $this->value = $validator->request->get($key);
-        }else{
-            $this->value = $value;
-        }
-
+        //
     }
 
     /**
@@ -49,8 +37,7 @@ class RuleFactory
         [$rule, $arguments] = $this->parseClassAndArguments();
 
         $class = 'App\\Practice\\Validation\\Rules\\' . $this->getBaseName($rule);
-        return tap(new $class($this->key, $this->value, $arguments))
-            ->setRequest($rule,$this->validator->request);
+        return new $class($this->key, $this->data, $arguments);
     }
 
     /**
@@ -59,12 +46,12 @@ class RuleFactory
      */
     public function makeAnonymous()
     {
-        $class = new class($this->key, $this->value) extends Rule {
+        $class = new class($this->key, $this->data) extends Rule {
             public $closure;
 
             public function check(): bool
             {
-                return call_user_func($this->closure, $this->value);
+                return call_user_func($this->closure, $this->getValue());
             }
 
             public function message(): string
@@ -79,7 +66,7 @@ class RuleFactory
 
     /**
      * get all arguments a rule object needed after the , symbol
-     * @return false|string[]
+     * @return string[]
      */
     public function getArguments()
     {
