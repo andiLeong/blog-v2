@@ -10,15 +10,16 @@ class ValidatorTest extends TestCase
     /** @test */
     public function it_can_check_a_required_rule()
     {
+        $field = 'name';
         $response = $this->get('/validate');
         $body = $response->json();
 
         $this->assertEquals(422, $response->status());
-        $this->assertEquals('The foo is required', $body['errors']['foo'][0]);
-        $this->assertArrayHasKey('foo', $body['errors']);
+        $this->assertEquals('The name is required', $body['errors'][$field][0]);
+        $this->assertArrayHasKey('name', $body['errors']);
 
-        $response = $this->get('/validate?foo=baz');
-        $this->assertNoValidationError($response, 'foo');
+        $response = $this->get('/validate?name=baz');
+        $this->assertNoValidationError($response, $field);
     }
 
     /** @test */
@@ -38,15 +39,15 @@ class ValidatorTest extends TestCase
     /** @test */
     public function it_can_check_a_min_rule()
     {
-        $field = 'bar';
-        $response = $this->get('/validate?bar=1');
+        $field = 'name';
+        $response = $this->get('/validate?name=1');
         $body = $response->json();
 
         $this->assertEquals(422, $response->status());
-        $this->assertEquals('The bar must at least be 3 long', $body['errors'][$field][0]);
+        $this->assertEquals('The name must at least be 3 long', $body['errors'][$field][0]);
         $this->assertArrayHasKey($field,$body['errors']);
 
-        $response = $this->get('/validate?bar=foo');
+        $response = $this->get('/validate?name=foo');
         $this->assertNoValidationError($response, $field);
     }
 
@@ -104,6 +105,17 @@ class ValidatorTest extends TestCase
 
         $this->assertEquals(422, $response->status());
         $this->assertEquals('you must fill in custom field', $body['errors'][$field][0]);
+        $this->assertArrayHasKey($field,$body['errors']);
+    }
+
+    /** @test */
+    public function it_support_closure_validation_rule()
+    {
+        $field = 'closure';
+        $response = $this->get('/validate');
+        $body = $response->json();
+
+        $this->assertEquals('a custom closure error message', $body['errors'][$field][0]);
         $this->assertArrayHasKey($field,$body['errors']);
     }
 

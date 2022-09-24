@@ -42,12 +42,36 @@ class RuleFactory
     }
 
     /**
+     * instantiate an anonymous rule object
+     * @return Rule
+     */
+    public function makeAnonymous()
+    {
+        $class = new class($this->key, $this->value) extends Rule {
+            public $closure;
+
+            public function check(): bool
+            {
+                return call_user_func($this->closure, $this->value);
+            }
+
+            public function message(): string
+            {
+                return "The $this->key is invalid";
+            }
+        };
+
+        $class->closure = $this->name;
+        return $class;
+    }
+
+    /**
      * get all arguments a rule object needed after the , symbol
      * @return false|string[]
      */
     public function getArguments()
     {
-        $rule = Str::after($this->name,':');
+        $rule = Str::after($this->name, ':');
         return explode(',', $rule);
     }
 

@@ -3,13 +3,15 @@
 namespace App\Practice\Validation\Rules;
 
 
+use ReflectionClass;
+
 abstract class Rule
 {
     protected $value;
     protected $arguments;
     protected $key;
 
-    public function __construct($key, $value, $arguments)
+    public function __construct($key, $value, $arguments = [])
     {
         $this->value = $value;
         $this->arguments = $arguments;
@@ -31,6 +33,15 @@ abstract class Rule
     public function key()
     {
        return $this->key;
+    }
+
+    public function getBaseName()
+    {
+        if ((new ReflectionClass($this))->isAnonymous()) {
+            return 'closure';
+        }
+
+        return strtolower(class_basename($this));
     }
 
     abstract public function check(): bool;

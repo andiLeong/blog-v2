@@ -12,14 +12,14 @@ class ValidationController extends Controller
     {
         $validator = new Validator($request);
         $data = $validator->validate([
-            'foo' => 'required',
-            'bar' => 'required|min:3',
             'name' => 'required|min:3|max:10',
             'email' => ['required', 'email'],
             'status' => 'required|in:0,1',
             'custom' => ['required', new Custom('answer')],
+            'closure' => [fn ($value) => $value === 'closure'],
         ], [
-            'custom.required' => 'you must fill in custom field'
+            'custom.required' => 'you must fill in custom field',
+            'closure.closure' => 'a custom closure error message'
         ]);
         return $data;
 

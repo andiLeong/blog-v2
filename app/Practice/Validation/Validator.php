@@ -4,6 +4,7 @@ namespace App\Practice\Validation;
 
 use App\Exceptions\CustomValidationException;
 use App\Practice\Validation\Rules\Rule;
+use Closure;
 use Illuminate\Http\Request;
 
 class Validator
@@ -23,7 +24,6 @@ class Validator
     public function validate(array $rules, array $message = [])
     {
         $this->messages = $message;
-
         $results = collect($rules)
             ->flatMap(fn($rule, $key) => $this->createRule(
                 $this->parseRuleToArray($rule), $key
@@ -85,29 +85,32 @@ class Validator
     /**
      * @param $rule
      * @param $key
-     * @return Rules\Rule
+     * @return Rule
      */
-    function buildRuleInstance($rule, $key): Rule
+    function buildRuleInstance($rule, $key)
     {
+        $value = $this->request->get($key);
         if ($rule instanceof Rule) {
-            $rule->setValue($this->request->get($key))
+            $rule->setValue($value)
                 ->setKey($key);
             return $rule;
         }
 
+        $method = $rule instanceof Closure ? 'makeAnonymous' : 'make';
+
         return $this
             ->getRuleFactory($rule, $key, $this->request->get($key))
-            ->make();
+            ->$method();
     }
 
     /**
      * get an error message of a rule instance
-     * @param $rule
+     * @param $rule Rule
      * @return mixed
      */
-    function getMessageOf($rule)
+    function getMessageOf(Rule $rule)
     {
-        $messageKey = $rule->key() . "." . strtolower(class_basename($rule));
+        $messageKey = $rule->key() . "." . $rule->getBaseName();
         if (array_key_exists($messageKey, $this->messages)) {
             return $this->messages[$messageKey];
         }
