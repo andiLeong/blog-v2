@@ -3,19 +3,24 @@
 namespace App\Practice\Validation\Rules;
 
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use ReflectionClass;
 
 abstract class Rule
 {
-    protected $value;
-    protected $arguments;
-    protected $key;
+    protected Request $request;
+    protected $needRequestRules = [
+        'required_if'
+    ];
 
-    public function __construct($key, $value, $arguments = [])
+    public function __construct(
+        protected $key,
+        protected $value,
+        protected $arguments = []
+    )
     {
-        $this->value = $value;
-        $this->arguments = $arguments;
-        $this->key = $key;
+        //
     }
 
     public function setValue($value)
@@ -30,6 +35,20 @@ abstract class Rule
         return $this;
     }
 
+    public function setRequest($rule,Request $request): Rule
+    {
+        if($this->needRequestDependency($rule)){
+            $this->request = $request;
+        }
+
+        return $this;
+    }
+
+    public function needRequestDependency($name)
+    {
+        return in_array($name,$this->needRequestRules);
+    }
+
     public function key()
     {
        return $this->key;
@@ -41,9 +60,11 @@ abstract class Rule
             return 'closure';
         }
 
-        return strtolower(class_basename($this));
+        return strtolower(Str::snake(class_basename($this)));
     }
 
     abstract public function check(): bool;
     abstract public function message(): string;
+
+
 }

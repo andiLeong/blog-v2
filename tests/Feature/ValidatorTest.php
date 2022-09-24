@@ -23,6 +23,20 @@ class ValidatorTest extends TestCase
     }
 
     /** @test */
+    public function it_can_check_a_required_if_rule()
+    {
+        $field = 'age';
+        $response = $this->get('/validate?name=foo');
+        $body = $response->json();
+
+        $this->assertEquals('age is required if name is provided', $body['errors'][$field][0]);
+        $this->assertArrayHasKey('age', $body['errors']);
+
+        $response = $this->get('/validate?name=baz&age=10');
+        $this->assertNoValidationError($response, $field);
+    }
+
+    /** @test */
     public function it_can_check_a_email_rule()
     {
         $response = $this->get('/validate?email=hi');

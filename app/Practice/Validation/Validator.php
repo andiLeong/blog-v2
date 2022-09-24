@@ -9,16 +9,15 @@ use Illuminate\Http\Request;
 
 class Validator
 {
-
-    private $rules;
-    private $request;
     private $messages;
     private $hasErrors = false;
 
-    public function __construct(Request $request, $rules = [])
+    public function __construct(
+        public Request $request,
+        private $rules = []
+    )
     {
-        $this->rules = $rules;
-        $this->request = $request;
+        //
     }
 
     public function validate(array $rules, array $message = [])
@@ -61,12 +60,11 @@ class Validator
     /**
      * @param $rule
      * @param $key
-     * @param $value
      * @return RuleFactory
      */
-    function getRuleFactory($rule, $key, $value): RuleFactory
+    function getRuleFactory($rule, $key): RuleFactory
     {
-        return new RuleFactory($rule, $key, $value);
+        return new RuleFactory($rule, $key, $this);
     }
 
     /**
@@ -99,7 +97,7 @@ class Validator
         $method = $rule instanceof Closure ? 'makeAnonymous' : 'make';
 
         return $this
-            ->getRuleFactory($rule, $key, $this->request->get($key))
+            ->getRuleFactory($rule, $key)
             ->$method();
     }
 

@@ -10,6 +10,7 @@ class RuleFactory
     private $name;
     private $key;
     private $value;
+    private $validator;
 
     /**
      * the name of the rule we are trying yo build instance
@@ -18,15 +19,25 @@ class RuleFactory
      * the key of the validation checking
      * @param $key
      *
+     * the validator instance
+     * @param Validator $validator
+     *
      * the value of the key comes from request
-     * @param $value
+     * @param null $value
      */
 
-    public function __construct($name, $key, $value)
+    public function __construct($name, $key, Validator $validator,$value = null)
     {
         $this->name = $name;
         $this->key = $key;
-        $this->value = $value;
+        $this->validator = $validator;
+
+        if(is_null($value)){
+            $this->value = $validator->request->get($key);
+        }else{
+            $this->value = $value;
+        }
+
     }
 
     /**
@@ -37,8 +48,9 @@ class RuleFactory
     {
         [$rule, $arguments] = $this->parseClassAndArguments();
 
-        $class = 'App\\Practice\\Validation\\Rules\\' . ucfirst($rule);
-        return new $class($this->key, $this->value, $arguments);
+        $class = 'App\\Practice\\Validation\\Rules\\' . $this->getBaseName($rule);
+        return tap(new $class($this->key, $this->value, $arguments))
+            ->setRequest($rule,$this->validator->request);
     }
 
     /**
@@ -100,5 +112,15 @@ class RuleFactory
     protected function getRuleNameBeforeColon()
     {
         return strstr($this->name, ':', true);
+    }
+
+    /**
+     * convert a rule name to an appropriate rule class name
+     * @param $rule
+     * @return string
+     */
+    protected function getBaseName($rule): string
+    {
+        return ucfirst(Str::camel($rule));
     }
 }
