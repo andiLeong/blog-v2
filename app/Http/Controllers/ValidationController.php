@@ -17,7 +17,7 @@ class ValidationController extends Controller
             'status' => 'required|in:0,1',
             'age' => 'required_if:name',
             'custom' => ['required', new Custom('answer')],
-            'closure' => [fn ($value) => $value === 'closure'],
+            'closure' => [fn($value, $key, $data) => $value === 'closure'],
         ], [
             'custom.required' => 'you must fill in custom field',
             'closure.closure' => 'a custom closure error message',

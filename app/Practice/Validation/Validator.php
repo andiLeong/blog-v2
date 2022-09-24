@@ -87,7 +87,7 @@ class Validator
     protected function buildRuleInstance($rule, $key)
     {
         if ($rule instanceof Rule) {
-            return tap($rule)->setProperty($this->data,$key);
+            return tap($rule)->setProperty($this->data, $key);
         }
 
         $method = $rule instanceof Closure ? 'makeAnonymous' : 'make';

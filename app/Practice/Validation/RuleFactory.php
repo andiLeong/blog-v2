@@ -51,7 +51,8 @@ class RuleFactory
 
             public function check(): bool
             {
-                return call_user_func($this->closure, $this->getValue());
+                $parameters = [$this->getValue(),$this->key(),$this->data];
+                return call_user_func($this->closure, ...$parameters);
             }
 
             public function message(): string
