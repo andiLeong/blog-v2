@@ -26,11 +26,11 @@ class Validator
             ->flatMap(fn($rule, $key) => $this->createRule(
                 $this->parseRuleToArray($rule), $key
             ))
-            ->reduce(function ($carry, $rule) {
+            ->reduce(function ($carry, Rule $rule) {
                 $result = $rule->check();
                 if (!$result) {
                     $this->hasErrors = true;
-                    $carry['errors'][$rule->key()][] = $this->getMessageOf($rule);
+                    $carry['errors'][$rule->key()][] = $rule->getErrorMessages($this->messages);
                 }
                 return $carry;
             }, []);
@@ -97,18 +97,4 @@ class Validator
             ->$method();
     }
 
-    /**
-     * get an error message of a rule instance
-     * @param $rule Rule
-     * @return mixed
-     */
-    protected function getMessageOf(Rule $rule): mixed
-    {
-        $messageKey = $rule->key() . "." . $rule->getBaseName();
-        if (array_key_exists($messageKey, $this->messages)) {
-            return $this->messages[$messageKey];
-        }
-
-        return $rule->message();
-    }
 }

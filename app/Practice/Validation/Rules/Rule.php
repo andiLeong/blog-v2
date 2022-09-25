@@ -8,10 +8,6 @@ use ReflectionClass;
 
 abstract class Rule
 {
-//    protected $needRequestRules = [
-//        'required_if'
-//    ];
-
     protected mixed $value;
 
     public function __construct(
@@ -32,20 +28,6 @@ abstract class Rule
         return $this;
     }
 
-//    public function setRequest($rule,Request $request): Rule
-//    {
-//        if($this->needRequestDependency($rule)){
-//            $this->request = $request;
-//        }
-//
-//        return $this;
-//    }
-//
-//    public function needRequestDependency($name)
-//    {
-//        return in_array($name,$this->needRequestRules);
-//    }
-
     public function key()
     {
         return $this->key;
@@ -63,6 +45,21 @@ abstract class Rule
         }
 
         return strtolower(Str::snake(class_basename($this)));
+    }
+
+    /**
+     * get error message of a rule
+     * @param array $customMessage
+     * @return mixed|string
+     */
+    public function getErrorMessages(array $customMessage)
+    {
+        $messageKey = $this->key() . "." . $this->getBaseName();
+        if (array_key_exists($messageKey, $customMessage)) {
+            return $customMessage[$messageKey];
+        }
+
+        return $this->message();
     }
 
     abstract public function check(): bool;

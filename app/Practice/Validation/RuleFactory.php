@@ -36,7 +36,7 @@ class RuleFactory
     {
         [$rule, $arguments] = $this->parseClassAndArguments();
 
-        $class = 'App\\Practice\\Validation\\Rules\\' . $this->getBaseName($rule);
+        $class = 'App\\Practice\\Validation\\Rules\\' . $this->convertToRuleClassName($rule);
         return new $class($this->key, $this->data, $arguments);
     }
 
@@ -51,7 +51,7 @@ class RuleFactory
 
             public function check(): bool
             {
-                $parameters = [$this->getValue(),$this->key(),$this->data];
+                $parameters = [$this->getValue(), $this->key(), $this->data];
                 return call_user_func($this->closure, ...$parameters);
             }
 
@@ -107,7 +107,7 @@ class RuleFactory
      * @param $rule
      * @return string
      */
-    protected function getBaseName($rule): string
+    protected function convertToRuleClassName($rule): string
     {
         return ucfirst(Str::camel($rule));
     }

@@ -12,10 +12,10 @@ class ValidationController extends Controller
     {
         $validator = new Validator($request->all());
         $data = $validator->validate([
-            'name' => 'required|min:3|max:10',
-            'email' => ['required', 'email'],
+            'name' => 'required|min:3|max:10|ends_with:z',
+            'email' => ['required', 'email','starts_with:a'],
             'status' => 'required|in:0,1',
-            'age' => 'required_if:name',
+            'age' => 'required_if:name|between:18,60,99',
             'custom' => ['required', new Custom('answer')],
             'closure' => [fn($value, $key, $data) => $value === 'closure'],
         ], [

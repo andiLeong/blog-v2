@@ -32,8 +32,19 @@ class ValidatorTest extends TestCase
         $this->assertEquals('age is required if name is provided', $body['errors'][$field][0]);
         $this->assertArrayHasKey('age', $body['errors']);
 
-        $response = $this->get('/validate?name=baz&age=10');
+        $response = $this->get('/validate?name=baz&age=19');
         $this->assertNoValidationError($response, $field);
+    }
+
+    /** @test */
+    public function it_can_check_a_between_rule()
+    {
+        $field = 'age';
+        $response = $this->get('/validate?age=10');
+        $body = $response->json();
+
+        $this->assertInArray('The age must between 18,60',$body['errors'][$field]);
+        $this->assertArrayHasKey($field, $body['errors']);
     }
 
     /** @test */
@@ -46,8 +57,20 @@ class ValidatorTest extends TestCase
         $this->assertEquals('The email must be a valid email', $body['errors']['email'][0]);
         $this->assertArrayHasKey('email', $body['errors']);
 
-        $response = $this->get('/validate?email=baz@gmail.com');
+        $response = $this->get('/validate?email=abaz@gmail.com');
         $this->assertNoValidationError($response, 'email');
+    }
+
+
+    /** @test */
+    public function it_can_check_a_starts_with_rule()
+    {
+        $field = 'email';
+        $response = $this->get('/validate?email=hi');
+        $body = $response->json();
+
+        $this->assertInArray('The email must starts with a',$body['errors'][$field]);
+        $this->assertArrayHasKey($field, $body['errors']);
     }
 
     /** @test */
@@ -61,7 +84,7 @@ class ValidatorTest extends TestCase
         $this->assertEquals('The name must at least be 3 long', $body['errors'][$field][0]);
         $this->assertArrayHasKey($field,$body['errors']);
 
-        $response = $this->get('/validate?name=foo');
+        $response = $this->get('/validate?name=foz');
         $this->assertNoValidationError($response, $field);
     }
 
@@ -76,8 +99,21 @@ class ValidatorTest extends TestCase
         $this->assertEquals('The name must not exceed 10 long', $body['errors'][$field][0]);
         $this->assertArrayHasKey($field,$body['errors']);
 
-        $response = $this->get('/validate?name=foo');
+        $response = $this->get('/validate?name=foz');
         $this->assertNoValidationError($response, $field);
+    }
+
+
+    /** @test */
+    public function it_can_check_a_ends_with_rule()
+    {
+        $field = 'name';
+        $response = $this->get('/validate?name=11111111111111');
+        $body = $response->json();
+
+        $this->assertEquals(422, $response->status());
+        $this->assertInArray('The name must ends with z',$body['errors'][$field]);
+        $this->assertArrayHasKey($field,$body['errors']);
     }
 
     /** @test */
@@ -141,5 +177,10 @@ class ValidatorTest extends TestCase
         } else {
             $this->assertArrayNotHasKey('errors', $body);
         }
+    }
+
+    private function assertInArray($item,$array)
+    {
+        $this->assertTrue(in_array($item,$array));
     }
 }
