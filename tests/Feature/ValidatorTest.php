@@ -124,7 +124,7 @@ class ValidatorTest extends TestCase
         $body = $response->json();
 
         $this->assertEquals(422, $response->status());
-        $this->assertEquals('The status is not in 0,1', $body['errors'][$field][0]);
+        $this->assertEquals('The status must in 0,1, you had provided 2', $body['errors'][$field][0]);
         $this->assertArrayHasKey($field,$body['errors']);
 
         $response = $this->get('/validate?status=0');

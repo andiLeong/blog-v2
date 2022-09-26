@@ -21,6 +21,7 @@ class ValidationController extends Controller
         ], [
             'custom.required' => 'you must fill in custom field',
             'closure.closure' => 'a custom closure error message',
+            'in' => 'The :key must in :argument, you had provided :value',
             'age.required_if' => 'age is required if name is provided'
         ]);
         return $data;

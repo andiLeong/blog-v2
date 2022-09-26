@@ -19,7 +19,7 @@ abstract class Rule
         $this->value = $this->getValue();
     }
 
-    public function setProperty($data,$key)
+    public function setProperty($data, $key)
     {
         $this->data = $data;
         $this->key = $key;
@@ -52,14 +52,30 @@ abstract class Rule
      * @param array $customMessage
      * @return mixed|string
      */
-    public function getErrorMessages(array $customMessage)
+    public function getErrorMessages(array $customMessage): mixed
     {
-        $messageKey = $this->key() . "." . $this->getBaseName();
+        $rule = $this->getBaseName();
+        $messageKey = $this->key() . "." . $rule;
         if (array_key_exists($messageKey, $customMessage)) {
-            return $customMessage[$messageKey];
+            return $this->parseErrorMessage($customMessage[$messageKey]);
+        }
+
+        if (array_key_exists($rule, $customMessage)) {
+            return $this->parseErrorMessage($customMessage[$rule]);
         }
 
         return $this->message();
+    }
+
+
+    private function parseErrorMessage(string $rule)
+    {
+        $argument = implode(',', $this->arguments);
+        return str_replace(
+            [':key', ':value', ':argument'],
+            [$this->key, $this->value, $argument],
+            $rule
+        );
     }
 
     abstract public function check(): bool;
