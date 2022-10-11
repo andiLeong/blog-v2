@@ -126,4 +126,23 @@ class Turing
 
         return array_sum($res);
     }
+
+    public function generateUniqueSetOfCombination($arr, $temp_string = '', &$collect = [])
+    {
+        if ($temp_string != "") {
+            $collect[] = $temp_string;
+        }
+
+        for ($i = 0, $count = sizeof($arr); $i < $count; $i++) {
+            $arrcopy = $arr;
+            $elem = array_splice($arrcopy, $i, 1); // removes and returns the i'th element
+            if (sizeof($arrcopy) > 0) {
+                $this->generateUniqueSetOfCombination($arrcopy, $temp_string . $elem[0], $collect);
+            } else {
+                $collect[] = $temp_string . $elem[0];
+            }
+        }
+
+        return $collect;
+    }
 }
