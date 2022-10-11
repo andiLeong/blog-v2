@@ -156,12 +156,7 @@ class Request
         }
 
         $keys = is_array($keys) ? $keys : func_get_args();
-        $query = $this->query;
-        foreach ($keys as $value) {
-            if (isset($query[$value])) {
-                unset($query[$value]);
-            }
-        }
+        $query = $this->filter(fn($q, $key) => !in_array($key,$keys),$this->query);
         $additional = http_build_query($query);
         return $this->url() . '?' . $additional;
     }
@@ -180,6 +175,23 @@ class Request
     public function baseUrl()
     {
         return "http://" . $this->server['HTTP_HOST'];
+    }
+
+    /**
+     * get the client ip
+     * @return mixed
+     */
+    public function ip()
+    {
+        if(isset($this->server['HTTP_CLIENT_IP'])){
+           return $this->server['HTTP_CLIENT_IP'];
+        }
+
+        if(isset($this->server['HTTP_X_FORWARDED_FOR'])){
+           return $this->server['HTTP_X_FORWARDED_FOR'];
+        }
+
+        return $this->server['REMOTE_ADDR'];
     }
 
     /**
@@ -290,9 +302,10 @@ class Request
         );
     }
 
-    protected function filter($fn)
+    protected function filter($fn,$items = null)
     {
-        return array_filter($this->all,
+        $items ??= $this->all;
+        return array_filter($items,
             fn($all,$key) => $fn($all,$key),
             ARRAY_FILTER_USE_BOTH
         );
