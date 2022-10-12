@@ -156,7 +156,7 @@ class Request
         }
 
         $keys = is_array($keys) ? $keys : func_get_args();
-        $query = $this->filter(fn($q, $key) => !in_array($key,$keys),$this->query);
+        $query = $this->filter(fn($q, $key) => !in_array($key, $keys), $this->query);
         $additional = http_build_query($query);
         return $this->url() . '?' . $additional;
     }
@@ -174,7 +174,18 @@ class Request
      */
     public function baseUrl()
     {
-        return "http://" . $this->server['HTTP_HOST'];
+        $http = $this->isHttps() ? 'https' : 'http';
+        return $http . "://" . $this->server['HTTP_HOST'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHttps()
+    {
+        $https = isset($this->server['HTTPS']) && !empty($this->server['HTTPS']);
+        $on443 = isset($this->server['SERVER_PORT']) && $this->server['SERVER_PORT'] == 443;
+        return $https || $on443;
     }
 
     /**
@@ -183,12 +194,12 @@ class Request
      */
     public function ip()
     {
-        if(isset($this->server['HTTP_CLIENT_IP'])){
-           return $this->server['HTTP_CLIENT_IP'];
+        if (isset($this->server['HTTP_CLIENT_IP'])) {
+            return $this->server['HTTP_CLIENT_IP'];
         }
 
-        if(isset($this->server['HTTP_X_FORWARDED_FOR'])){
-           return $this->server['HTTP_X_FORWARDED_FOR'];
+        if (isset($this->server['HTTP_X_FORWARDED_FOR'])) {
+            return $this->server['HTTP_X_FORWARDED_FOR'];
         }
 
         return $this->server['REMOTE_ADDR'];
@@ -285,7 +296,7 @@ class Request
     {
         $keys = is_array($keys) ? $keys : func_get_args();
         return $this->filter(
-            fn($all,$key) => in_array($key,$keys),
+            fn($all, $key) => in_array($key, $keys),
         );
     }
 
@@ -298,15 +309,15 @@ class Request
     {
         $keys = is_array($keys) ? $keys : func_get_args();
         return $this->filter(
-            fn($all,$key) => !in_array($key,$keys),
+            fn($all, $key) => !in_array($key, $keys),
         );
     }
 
-    protected function filter($fn,$items = null)
+    protected function filter($fn, $items = null)
     {
         $items ??= $this->all;
         return array_filter($items,
-            fn($all,$key) => $fn($all,$key),
+            fn($all, $key) => $fn($all, $key),
             ARRAY_FILTER_USE_BOTH
         );
     }
@@ -320,7 +331,7 @@ class Request
      */
     public function whenHas($key, $fn, $default = null)
     {
-        if($this->has($key)){
+        if ($this->has($key)) {
             return $fn($this->get($key));
         }
 
