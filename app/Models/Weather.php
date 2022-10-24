@@ -14,7 +14,7 @@ class Weather
     public function get($lat, $lon)
     {
         $this->lat = $lat;
-        $this->lon = $lat;
+        $this->lon = $lon;
 
         return [
             'today' => $this->today(),
