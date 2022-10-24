@@ -6,6 +6,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\SearchPostController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +62,8 @@ Route::get('/test', function (Request $request) {
 
     return 'hi';
 });
+
+Route::get('/weather', WeatherController::class);
 
 Route::post('/location-distance', function(){
 

@@ -30,4 +30,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'open_weather' => [
+        'app_id' => env('OPEN_WEATHER_ADD_ID'),
+    ],
 ];
