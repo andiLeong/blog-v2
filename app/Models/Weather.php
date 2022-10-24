@@ -34,8 +34,8 @@ class Weather
 
     public function getTargetUrl($endpoint)
     {
-        if(!str_starts_with($endpoint,'/')){
-           $endpoint = '/' . $endpoint;
+        if (!str_starts_with($endpoint, '/')) {
+            $endpoint = '/' . $endpoint;
         }
 
         return self::URL . $endpoint;
@@ -47,9 +47,9 @@ class Weather
             'lat' => $this->lat,
             'lon' => $this->lon,
         ]);
-        $response = Http::get($this->getTargetUrl($endpoint),$query);
+        $response = Http::get($this->getTargetUrl($endpoint), $query);
 
-        if($response->ok()){
+        if ($response->ok()) {
             return $response->json();
         }
 
@@ -59,7 +59,8 @@ class Weather
     private function basePayload(array $payload)
     {
         return array_merge([
-           'appid' => config('services.open_weather.app_id')
-        ],$payload);
+            'appid' => config('services.open_weather.app_id'),
+            'units' => 'metric'
+        ], $payload);
     }
 }
