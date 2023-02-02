@@ -48,4 +48,5 @@ jobs:
       env:
           DB_USERNAME: root
           DB_DATABASE_TEST: blog-v2-test
+          DB_CONNECTION: mysql
       run: vendor/bin/phpunit
