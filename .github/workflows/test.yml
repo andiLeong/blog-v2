@@ -45,4 +45,7 @@ jobs:
 
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit
+      env:
+          DB_USERNAME: root
+          DB_DATABASE_TEST: blog-v2-test
       run: vendor/bin/phpunit
