@@ -4,26 +4,21 @@ namespace Tests\Feature;
 
 use App\FakeQueryBuilder;
 use App\Models\Order;
-use Illuminate\Database\MySqlConnection;
 use Illuminate\Support\Collection;
+use Tests\DbConnection;
 use Tests\TestCase;
 
 class RunFakeQueryBuilderTest extends TestCase
 {
+    use DbConnection;
 
     private $queryBuilder;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $username = env('DB_USERNAME');
-        $password = env('DB_PASSWORD');
-        $database = env('DB_DATABASE_TEST');
-        $pdo = new \PDO("mysql:host=localhost;dbname=$database", $username, $password);
-        $mysqlConnection = new MySqlConnection($pdo);
-        $this->queryBuilder = new FakeQueryBuilder($mysqlConnection);
-//        $this->orders = create(Order::class,[],10);
+        $this->buildConnection();
+        $this->queryBuilder = new FakeQueryBuilder(self::$connection);
         Order::truncate();
     }
 

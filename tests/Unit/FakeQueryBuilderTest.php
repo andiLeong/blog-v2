@@ -3,22 +3,20 @@
 namespace Tests\Unit;
 
 use App\FakeQueryBuilder;
-use Illuminate\Database\MySqlConnection;
+use Tests\DbConnection;
 use Tests\TestCase;
 
 class FakeQueryBuilderTest extends TestCase
 {
+    use DbConnection;
+
     private $queryBuilder;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $username = env('DB_USERNAME');
-        $password = env('DB_PASSWORD');
-        $database = env('DB_DATABASE_TEST');
-        $pdo = new \PDO("mysql:host=localhost;dbname=$database", $username, $password);
-        $mysqlConnection = new MySqlConnection($pdo);
-        $this->queryBuilder = new FakeQueryBuilder($mysqlConnection);
+        $this->buildConnection();
+        $this->queryBuilder = new FakeQueryBuilder(self::$connection);
     }
 
     /** @test */
@@ -65,7 +63,7 @@ class FakeQueryBuilderTest extends TestCase
                 'boolean' => 'and',
             ]
         ];
-        $this->assertEquals($wheres,$this->queryBuilder->wheres);
+        $this->assertEquals($wheres, $this->queryBuilder->wheres);
     }
 
     /** @test */
@@ -75,7 +73,7 @@ class FakeQueryBuilderTest extends TestCase
             ->where('id', '>=', 5)
             ->where('name', 'an');
 
-        $bindings = [5,'an'];
-        $this->assertEquals($bindings,$this->queryBuilder->bindings['where']);
+        $bindings = [5, 'an'];
+        $this->assertEquals($bindings, $this->queryBuilder->bindings['where']);
     }
 }
