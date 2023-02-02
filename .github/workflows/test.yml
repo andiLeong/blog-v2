@@ -40,7 +40,7 @@ jobs:
       run: chmod -R 777 storage bootstrap/cache
       
     - name: Create Database
-      run: mysql --host 127.0.0.1 --port 3306 -uroot -e "CREATE DATABASE IF NOT EXISTS 'blog-v2-test';"
+      run: mysql --host 127.0.0.1 --port 3306 -uroot -e "CREATE DATABASE IF NOT EXISTS `blog-v2-test`;"
         
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
