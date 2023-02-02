@@ -60,6 +60,7 @@ return [
             'endpoint' => env('DIGITALOCEAN_SPACES_ENDPOINT'),
             'region' => env('DIGITALOCEAN_SPACES_REGION'),
             'bucket' => env('DIGITALOCEAN_SPACES_BUCKET', 'default-bucket'),
+            'fullUrl' => env('DIGITALOCEAN_SPACES_BASE_URL', 'http://fake-url.com/'),
         ],
 
 
