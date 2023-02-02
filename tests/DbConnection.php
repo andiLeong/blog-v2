@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Illuminate\Database\MySqlConnection;
-use Tests\Unit\FakeQueryBuilderTest;
 
 trait DbConnection
 {
@@ -11,7 +10,7 @@ trait DbConnection
 
     protected function buildConnection()
     {
-        if (FakeQueryBuilderTest::$connection instanceof MySqlConnection) {
+        if (self::$connection instanceof MySqlConnection) {
             return;
         }
 
