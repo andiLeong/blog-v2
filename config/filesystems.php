@@ -60,7 +60,6 @@ return [
             'endpoint' => env('DIGITALOCEAN_SPACES_ENDPOINT'),
             'region' => env('DIGITALOCEAN_SPACES_REGION'),
             'bucket' => env('DIGITALOCEAN_SPACES_BUCKET'),
-            'fullUrl' => 'https://andiliang.sgp1.digitaloceanspaces.com/',
         ],
 
 
