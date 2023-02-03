@@ -10,6 +10,7 @@ use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,8 +91,8 @@ Route::post('/deploy', function(){
     $request = request();
     $signature = $request->headers->get('x-hub-signature-256');
 
-    $hash = hash_hmac('sha256',json_encode($request->all()), 'foo-bar');
-    if($hash !== $signature){
+    $hash = hash_hmac('sha256', $request->getContent(), 'foo-bar');
+    if(! hash_equals(Str::after($signature, 'sha256='), $hash)){
         abort(404, 'The Page Is not existed');
     }
 
