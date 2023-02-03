@@ -54,16 +54,6 @@ Route::get('/gallery/{gallery}', [GalleryController::class,'show'] );
 Route::get('/order', [OrderController::class,'index']);
 Route::delete('/order/{ids}', [OrderController::class,'destroy']);
 
-Route::get('/test', function (Request $request) {
-
-
-
-
-	// auth()->loginUsingId(12);
-
-    return 'hi';
-});
-
 Route::get('/weather', WeatherController::class);
 
 Route::post('/location-distance', function(){
