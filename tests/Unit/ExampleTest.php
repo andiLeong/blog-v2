@@ -13,6 +13,7 @@ class ExampleTest extends TestCase
      */
     public function test_example()
     {
+        dd('purposely make the test fail, so the deploy action should not run'):
         $this->assertTrue(true);
     }
 }
