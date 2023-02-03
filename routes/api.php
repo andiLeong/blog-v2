@@ -84,3 +84,20 @@ Route::post('/location-distance', function(){
 
 });
 
+
+Route::post('/deploy', function(){
+
+    $request = request();
+    $signature = $request->headers->get('x-hub-signature-256');
+
+    $hash = hash_hmac('sha256',json_encode($request->all()), 'foo-bar');
+    if($hash !== $signature){
+        abort(404, 'The Page Is not existed');
+    }
+
+    return [
+        'message' => 'receive github action',
+        'request' => request()->all(),
+        'header' => request()->header->all(),
+    ];
+});
