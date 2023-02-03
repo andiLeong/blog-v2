@@ -20,6 +20,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/blog-v2
-            whoami
+            cd ${{ secrets.SSH_PROJECT_PATH }}
+            sh deploy.sh
 
