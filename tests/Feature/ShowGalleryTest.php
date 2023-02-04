@@ -54,6 +54,31 @@ class ShowGalleryTest extends TestCase
         $this->assertEquals("$name.jpeg", $files[0]['name']);
     }
 
+    /** @test */
+    public function it_gets_age_property_when_fetch_gallery_file()
+    {
+        $this->be(admin());
+        $id = Gallery::factory()->create()->id;
+        $this->uploadFile($id, $oneYearThreeMonth = 'one_year_three_months', today()->subYear()->subMonths(3));
+        $this->uploadFile($id, $zeroYearFourMonths = 'zero_year_four_months', today()->subMonths(4));
+        $this->uploadFile($id, $zeroYearZeroMonthFiveDays = 'zero_year_zero_months_five_days', today()->subDays(5));
+
+        $files = $this->get("/api/gallery/$id?oldest=1")->json('data');
+        $oneYearThreeMonth = $this->filterToOne($files, $oneYearThreeMonth);
+        $zeroYearFourMonths = $this->filterToOne($files, $zeroYearFourMonths);
+        $zeroYearZeroMonthFiveDays = $this->filterToOne($files, $zeroYearZeroMonthFiveDays);
+
+        $this->assertEquals("1 year, 3 months, 0 days", $oneYearThreeMonth['age']);
+        $this->assertEquals("0 years, 4 months, 0 days", $zeroYearFourMonths['age']);
+        $this->assertEquals("0 years, 0 months, 5 days", $zeroYearZeroMonthFiveDays['age']);
+    }
+
+    public function filterToOne($items, $name)
+    {
+        return array_values(array_filter($items, fn($item) => $item['name'] == $name . '.jpeg'))[0];
+
+    }
+
     private function uploadFile($id, $name, $lastModified = null)
     {
         if ($lastModified instanceof \DateTimeInterface) {

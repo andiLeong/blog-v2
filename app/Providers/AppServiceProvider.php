@@ -6,6 +6,7 @@ use App\Practice\Validation\Validator;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(Filesystem::class, function () {
             return Storage::disk('digitalocean');
+        });
+
+        Str::macro('pluralWords', function($word, $number, $separator = ' '){
+            return $number . $separator . Str::plural($word, $number);
         });
     }
 }
