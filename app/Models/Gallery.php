@@ -9,6 +9,8 @@ class Gallery extends Model
 {
     use HasFactory;
 
+    public const DOB = '2020-04-16';
+
     public function files()
     {
         return $this->morphMany(File::class,'fileable');

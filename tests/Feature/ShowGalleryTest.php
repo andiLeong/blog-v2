@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Gallery;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
@@ -59,9 +60,9 @@ class ShowGalleryTest extends TestCase
     {
         $this->be(admin());
         $id = Gallery::factory()->create()->id;
-        $this->uploadFile($id, $oneYearThreeMonth = 'one_year_three_months', today()->subYear()->subMonths(3));
-        $this->uploadFile($id, $zeroYearFourMonths = 'zero_year_four_months', today()->subMonths(4));
-        $this->uploadFile($id, $zeroYearZeroMonthFiveDays = 'zero_year_zero_months_five_days', today()->subDays(5));
+        $this->uploadFile($id, $oneYearThreeMonth = 'one_year_three_months', Carbon::parse('2021-07-16'));
+        $this->uploadFile($id, $zeroYearFourMonths = 'zero_year_four_months', Carbon::parse('2020-08-16'));
+        $this->uploadFile($id, $zeroYearZeroMonthFiveDays = 'zero_year_zero_months_five_days', Carbon::parse('2020-04-21'));
 
         $files = $this->get("/api/gallery/$id?oldest=1")->json('data');
         $oneYearThreeMonth = $this->filterToOne($files, $oneYearThreeMonth);
