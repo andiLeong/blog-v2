@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class GalleryFactory extends Factory
 {
@@ -14,7 +15,7 @@ class GalleryFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'hi'
+            'name' => Str::random(5)
         ];
     }
 }
