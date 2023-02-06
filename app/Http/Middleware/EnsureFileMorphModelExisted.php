@@ -19,8 +19,8 @@ class EnsureFileMorphModelExisted
     {
         try {
             File::getSourceModel($request->fileable_type, $request->fileable_id);
-        } catch (\Exception) {
-            abort(404, 'Model isn\'t found ');
+        } catch (\Exception $e) {
+            abort(404, $e->getMessage());
         }
 
         return $next($request);

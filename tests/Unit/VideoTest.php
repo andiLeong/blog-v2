@@ -1,27 +1,26 @@
 <?php
 
+namespace Tests\Unit;
 
 use App\Models\File;
 use App\Models\Gallery;
+use App\Models\Video;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
-
-class GalleryTest extends testcase
+class VideoTest extends TestCase
 {
-
     use LazilyRefreshDatabase;
 
     /** @test */
     public function it_can_load_the_files_relationship()
     {
-        $gallery = Gallery::factory()->create();
+        $video = Video::factory()->create();
         $file = File::factory()->create([
-            'fileable_id' => $gallery->id,
-            'fileable_type' => Model::getActualClassNameForMorph(Gallery::class),
+            'fileable_id' => $video->id,
+            'fileable_type' => Model::getActualClassNameForMorph(Video::class),
         ]);
-        $this->assertEquals($file->id,$gallery->files[0]->id);
+        $this->assertEquals($file->id, $video->files[0]->id);
     }
-
 }

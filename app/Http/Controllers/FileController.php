@@ -16,7 +16,7 @@ class FileController extends Controller
         ]);
 
         $file = $data['file'];
-        $path = $fileManager->putFileAs('junsing', $file,  $file->getClientOriginalName() ,'public');
+        $path = $fileManager->putFileAs('test', $file,  $file->getClientOriginalName() ,'public');
         if (! $path){
            abort(502, 'Fail to upload the file');
         }

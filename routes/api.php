@@ -6,6 +6,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\SearchPostController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\VideoController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +50,7 @@ Route::get('/posts/{post:slug}', [PostController::class,'show']);
 Route::get('/tags', [TagController::class,'index']);
 
 Route::get('/gallery/{gallery}', [GalleryController::class,'show'] );
+Route::get('/video/{video}', [VideoController::class,'show'] );
 
 
 Route::get('/order', [OrderController::class,'index']);

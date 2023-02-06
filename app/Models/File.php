@@ -35,11 +35,11 @@ class File extends Model
         return $this->morphTo();
     }
 
-    public function scopeWithRelation($query,$id,$model)
+    public function scopeWithRelation($query, $id, $model)
     {
         return $query
-            ->where('fileable_id',$id)
-            ->where('fileable_type',Model::getActualClassNameForMorph($model));
+            ->where('fileable_id', $id)
+            ->where('fileable_type', $model);
     }
 
     public function getUrlAttribute($value)
@@ -49,7 +49,7 @@ class File extends Model
 
     public function getSizeAttribute($value)
     {
-        return round($value / 1000000, 2 );
+        return round($value / 1000000, 2);
     }
 
     public function getAgeAttribute()
@@ -71,12 +71,12 @@ class File extends Model
      * @return Model
      * @throws \Exception
      */
-    public static function getSourceModel(string|null $model, string|int|null $id) :Model
+    public static function getSourceModel(string|null $model, string|int|null $id): Model
     {
         $model = ucfirst(strtolower($model));
         $model = "\\App\\Models\\$model";
 
-        if (! class_exists($model)){
+        if (!class_exists($model)) {
             throw new \Exception('Model isn\'t found ');
         }
 
