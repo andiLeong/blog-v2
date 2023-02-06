@@ -4,54 +4,47 @@ namespace Tests\Feature;
 
 use App\Models\Gallery;
 use Carbon\Carbon;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
-use Mockery\MockInterface;
+use Tests\FileCanBeUploaded;
 use Tests\TestCase;
 
 class ShowGalleryTest extends TestCase
 {
     use LazilyRefreshDatabase;
+    use FileCanBeUploaded;
 
     /** @test */
     public function it_can_show_all_gallery_files()
     {
-        $this->be(admin());
-
         $gallery = Gallery::factory()->create();
         for ($x = 1; $x <= 3; $x++) {
-            $this->uploadFile($gallery->id, Str::random(5));
+            $this->uploadFile($gallery, Str::random(5));
         }
 
-        $response = $this->get("/api/gallery/$gallery->id");
-        $this->assertNotEmpty($response->json()['data']);
-        $response->assertStatus(200);
+        tap($this->get("/api/gallery/$gallery->id"), fn($response) => $this->assertNotEmpty($response->json()['data']))
+            ->assertStatus(200);
     }
 
     /** @test */
     public function by_default_it_sorts_gallery_by_latest_modified_date()
     {
-        $this->be(admin());
-        $id = Gallery::factory()->create()->id;
-        $this->uploadFile($id, Str::random(5), today()->subDay());
-        $this->uploadFile($id, 'latest', today());
+        $gallery = Gallery::factory()->create();
+        $this->uploadFile($gallery, Str::random(5), today()->subDay());
+        $this->uploadFile($gallery, 'latest', today());
 
-        $files = $this->get("/api/gallery/$id")->json('data');
-
+        $files = $this->get("/api/gallery/$gallery->id")->json('data');
         $this->assertEquals('latest.jpeg', $files[0]['name']);
     }
 
     /** @test */
     public function it_sorts_gallery_by_dynamic_query_string()
     {
-        $this->be(admin());
-        $id = Gallery::factory()->create()->id;
-        $this->uploadFile($id, $name = Str::random(5), today()->subDay());
-        $this->uploadFile($id, 'latest', today());
+        $gallery = Gallery::factory()->create();
+        $this->uploadFile($gallery, $name = Str::random(5), today()->subDay());
+        $this->uploadFile($gallery, 'latest', today());
 
-        $files = $this->get("/api/gallery/$id?oldest=1")->json('data');
+        $files = $this->get("/api/gallery/$gallery->id?oldest=1")->json('data');
 
         $this->assertEquals("latest.jpeg", $files[1]['name']);
         $this->assertEquals("$name.jpeg", $files[0]['name']);
@@ -60,13 +53,13 @@ class ShowGalleryTest extends TestCase
     /** @test */
     public function it_gets_age_property_when_fetch_gallery_file()
     {
-        $this->be(admin());
-        $id = Gallery::factory()->create()->id;
-        $this->uploadFile($id, $oneYearThreeMonth = 'one_year_three_months', Carbon::parse('2021-07-16'));
-        $this->uploadFile($id, $zeroYearFourMonths = 'zero_year_four_months', Carbon::parse('2020-08-16'));
-        $this->uploadFile($id, $zeroYearZeroMonthFiveDays = 'zero_year_zero_months_five_days', Carbon::parse('2020-04-21'));
+        $gallery = Gallery::factory()->create();
+        $this->uploadFile($gallery, $oneYearThreeMonth = 'one_year_three_months', Carbon::parse('2021-07-16'));
+        $this->uploadFile($gallery, $zeroYearFourMonths = 'zero_year_four_months', Carbon::parse('2020-08-16'));
+        $this->uploadFile($gallery, $zeroYearZeroMonthFiveDays = 'zero_year_zero_months_five_days', Carbon::parse('2020-04-21'));
 
-        $files = $this->get("/api/gallery/$id?oldest=1")->json('data');
+        $files = $this->get("/api/gallery/$gallery->id?oldest=1")->json('data');
+
         $oneYearThreeMonth = $this->filterToOne($files, $oneYearThreeMonth);
         $zeroYearFourMonths = $this->filterToOne($files, $zeroYearFourMonths);
         $zeroYearZeroMonthFiveDays = $this->filterToOne($files, $zeroYearZeroMonthFiveDays);
@@ -79,26 +72,10 @@ class ShowGalleryTest extends TestCase
     public function filterToOne($items, $name)
     {
         return array_values(array_filter($items, fn($item) => $item['name'] == $name . '.jpeg'))[0];
-
     }
 
-    private function uploadFile($id, $name, $lastModified = null)
+    private function uploadFile($model, $name, $lastModified = null)
     {
-        if ($lastModified instanceof \DateTimeInterface) {
-            $lastModified = $lastModified->getTimestamp() * 1000;
-        } else {
-            $lastModified = now()->subDays(20)->getTimestamp() * 1000;
-        }
-
-        $this->mock(Filesystem::class, fn (MockInterface $mock) =>
-            $mock->shouldReceive('putFileAs')->once()->andReturn($name . 'jpg')
-        );
-
-        $this->postJson('/api/files', [
-            'fileable_id' => $id,
-            'fileable_type' => 'gallery',
-            'file' => UploadedFile::fake()->image("$name.jpeg"),
-            'last_modified' => $lastModified,
-        ]);
+        return $this->upload($model, $name . '.jpeg', null, $lastModified);
     }
 }
