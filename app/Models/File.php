@@ -19,6 +19,17 @@ class File extends Model
         'last_modified' => "datetime",
     ];
 
+    protected static $sourceModel;
+
+    protected static function booted()
+    {
+        static::creating(function ($file) {
+            $file->fileable_type ??= self::$sourceModel::class;
+            $file->fileable_id ??= self::$sourceModel->id;
+
+        });
+    }
+
     public function fileable()
     {
         return $this->morphTo();
@@ -50,5 +61,25 @@ class File extends Model
         $year = Str::pluralWords('year', $lastModified->diff($dob)->format('%y'));
 
         return "$year, $month, $day";
+    }
+
+    /**
+     * try to retrieve a source model
+     *
+     * @param string|null $model
+     * @param string|int|null $id
+     * @return Model
+     * @throws \Exception
+     */
+    public static function getSourceModel(string|null $model, string|int|null $id) :Model
+    {
+        $model = ucfirst(strtolower($model));
+        $model = "\\App\\Models\\$model";
+
+        if (! class_exists($model)){
+            throw new \Exception('Model isn\'t found ');
+        }
+
+        return self::$sourceModel = $model::findOrFail($id);
     }
 }

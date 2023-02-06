@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Gallery;
 use Carbon\Carbon;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class ShowGalleryTest extends TestCase
@@ -87,6 +89,10 @@ class ShowGalleryTest extends TestCase
         } else {
             $lastModified = now()->subDays(20)->getTimestamp() * 1000;
         }
+
+        $this->mock(Filesystem::class, fn (MockInterface $mock) =>
+            $mock->shouldReceive('putFileAs')->once()->andReturn($name . 'jpg')
+        );
 
         $this->postJson('/api/files', [
             'fileable_id' => $id,
