@@ -232,5 +232,5 @@ return [
 
     ],
 
-    'admin' => explode(',', env('admin', '')),
+    'admin' => explode(',', env('ADMIN', '')),
 ];
