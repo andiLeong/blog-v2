@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Facades\Config;
 
 function create($class, $attributes = [], $times = null)
 {
@@ -14,8 +15,10 @@ function make($class, $attributes = [], $times = null)
 
 function admin()
 {
-    if($user = User::whereEmail('andiliang9988@gmail.com')->first()){
+    $adminEmail = 'admin@gmail.com';
+    Config::set('app.admin', explode(',', $adminEmail));
+    if($user = User::whereEmail($adminEmail)->first()){
        return $user;
     }
-    return create(User::class,['email' => 'andiliang9988@gmail.com']);
+    return create(User::class,['email' => $adminEmail]);
 }

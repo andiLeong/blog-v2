@@ -20,8 +20,7 @@ abstract class TestCase extends BaseTestCase
 
     public function admin()
     {
-        $user = create(User::class,['email' => 'andiliang9988@gmail.com']);
-        return $this->signIn($user);
+        return $this->signIn(admin());
     }
 
     public function createPost($tags = null)
