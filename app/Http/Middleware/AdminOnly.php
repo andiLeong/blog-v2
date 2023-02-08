@@ -16,8 +16,7 @@ class AdminOnly
      */
     public function handle(Request $request, Closure $next)
     {
-        
-        if( auth()->user()->email !== 'andiliang9988@gmail.com' ){
+        if(! auth()->user()->isAdmin() ){
             abort(403,'Access deny');
         }
         return $next($request);

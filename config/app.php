@@ -232,4 +232,5 @@ return [
 
     ],
 
+    'admin' => explode(',', env('admin', '')),
 ];
