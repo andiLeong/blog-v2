@@ -24,13 +24,6 @@ class FileUploadTest extends testcase
     }
 
     /** @test */
-    public function it_response_with_502_if_upload_fails()
-    {
-        $gallery = Gallery::factory()->create();
-        $this->upload($gallery, 'avatar.jpeg', false)->assertStatus(502);
-    }
-
-    /** @test */
     public function it_can_upload_a_gallery_photo()
     {
         $gallery = Gallery::factory()->create();

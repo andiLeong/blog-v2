@@ -26,7 +26,6 @@ class File extends Model
         static::creating(function ($file) {
             $file->fileable_type ??= self::$sourceModel::class;
             $file->fileable_id ??= self::$sourceModel->id;
-
         });
     }
 
@@ -71,7 +70,7 @@ class File extends Model
      * @return Model
      * @throws \Exception
      */
-    public static function getSourceModel(string|null $model, string|int|null $id): Model
+    public static function setSourceModel(string|null $model, string|int|null $id): Model
     {
         $model = ucfirst(strtolower($model));
         $model = "\\App\\Models\\$model";
@@ -81,5 +80,10 @@ class File extends Model
         }
 
         return self::$sourceModel = $model::findOrFail($id);
+    }
+
+    public static function getResourceModel()
+    {
+        return self::$sourceModel;
     }
 }
