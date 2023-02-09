@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Practice\Validation\Validator;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -39,6 +40,10 @@ class AppServiceProvider extends ServiceProvider
 
         Str::macro('pluralWords', function($word, $number, $separator = ' '){
             return $number . $separator . Str::plural($word, $number);
+        });
+
+        UploadedFile::macro('setUploadedPath', function($path){
+           $this->uploadedPath = $path;
         });
     }
 }

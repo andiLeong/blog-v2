@@ -10,7 +10,6 @@ class FileAttributes
 
     public function __construct(
         protected UploadedFile $file,
-        protected string $path,
         protected $lastModified = null,
         protected $overwrites = []
     )
@@ -24,7 +23,7 @@ class FileAttributes
 
         return array_merge([
             'name' => $this->file->getClientOriginalName(),
-            'url' => $this->path,
+            'url' => $this->file->uploadedPath,
             'type' => $this->file->getClientOriginalExtension(),
             'size' => $this->file->getSize(),
             'last_modified' => Carbon::createFromTimestamp($lastModified),

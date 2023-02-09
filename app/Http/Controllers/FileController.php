@@ -21,7 +21,8 @@ class FileController extends Controller
            abort(502, 'Fail to upload the file');
         }
 
-        $attribute = (new FileAttributes($file, $path, $data['last_modified']))->toArray();
+        $file->setUploadedPath($path);
+        $attribute = (new FileAttributes($file, $data['last_modified']))->toArray();
         return File::create($attribute);
     }
 

@@ -56,5 +56,6 @@ class FileUploadTest extends testcase
         $this->assertNotNull($file);
         $this->assertEquals($video->id, $file->fileable_id);
         $this->assertEquals('App\Models\Video', $file->fileable_type);
+        $this->assertEquals('avatar.mp4', $file->getRawOriginal('url'));
     }
 }
