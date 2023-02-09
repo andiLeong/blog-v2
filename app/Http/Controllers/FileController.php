@@ -2,28 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\File;
+use App\Jobs\UploadFile;
 use App\Models\FileAttributes;
-use Illuminate\Contracts\Filesystem\Filesystem;
 
 class FileController extends Controller
 {
-    public function store(Filesystem $fileManager)
+    public function store()
     {
         $data = request()->validate([
             'file' => 'required|file',
             'last_modified' => 'required',
         ]);
 
-        $file = $data['file'];
-        $path = $fileManager->putFileAs('test', $file,  $file->getClientOriginalName() ,'public');
-        if (! $path){
-           abort(502, 'Fail to upload the file');
-        }
+        $path = $data['file']->store('files', ['disk' => 'local']);
+        $path = config('filesystems.disks.local.root') . DIRECTORY_SEPARATOR . $path;
 
-        $file->setUploadedPath($path);
-        $attribute = (new FileAttributes($file, $data['last_modified']))->toArray();
-        return File::create($attribute);
+        $attributes = FileAttributes::make($data['file'], $data['last_modified']);
+        UploadFile::dispatch($path, $attributes);
+
+        return ['payload' => $attributes];
     }
 
 }

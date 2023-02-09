@@ -18,7 +18,7 @@ class EnsureFileMorphModelExisted
     public function handle(Request $request, Closure $next)
     {
         try {
-            File::getSourceModel($request->fileable_type, $request->fileable_id);
+            File::setSourceModel($request->fileable_type, $request->fileable_id);
         } catch (\Exception $e) {
             abort(404, $e->getMessage());
         }

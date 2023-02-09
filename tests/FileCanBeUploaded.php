@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Config;
 use Mockery\MockInterface;
 
 trait FileCanBeUploaded
@@ -12,6 +13,7 @@ trait FileCanBeUploaded
 
     public function upload(Model $model, $name = 'avatar.jpeg', $mockReturn = null, \DateTimeInterface $lastModified = null)
     {
+        Config::set('queue.default', 'sync');
         $file = UploadedFile::fake()->image($name);
 
         $this->mock(Filesystem::class, fn(MockInterface $mock) =>

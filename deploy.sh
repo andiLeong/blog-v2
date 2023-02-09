@@ -25,6 +25,9 @@ composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 # Run database migrations
 php artisan migrate --force
 
+# restart queue work
+php artisan queue:restart
+
 # Exit maintenance mode
 #php artisan up
 

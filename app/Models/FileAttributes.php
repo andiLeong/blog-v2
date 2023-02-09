@@ -8,25 +8,18 @@ use Illuminate\Support\Carbon;
 class FileAttributes
 {
 
-    public function __construct(
-        protected UploadedFile $file,
-        protected $lastModified = null,
-        protected $overwrites = []
-    )
+    public static function make(UploadedFile $file, $lastModified = null, $overwrites = []): array
     {
-        //
-    }
+        $lastModified = $lastModified / 1000 ?? now()->getTimestamp();
 
-    public function toArray(): array
-    {
-        $lastModified = $this->lastModified / 1000 ?? now()->getTimestamp();
-
+        $model = File::getResourceModel();
         return array_merge([
-            'name' => $this->file->getClientOriginalName(),
-            'url' => $this->file->uploadedPath,
-            'type' => $this->file->getClientOriginalExtension(),
-            'size' => $this->file->getSize(),
+            'name' => $file->getClientOriginalName(),
+            'type' => $file->getClientOriginalExtension(),
+            'size' => $file->getSize(),
             'last_modified' => Carbon::createFromTimestamp($lastModified),
-        ], $this->overwrites);
+            'fileable_type' => $model::class,
+            'fileable_id' => $model->id,
+        ], $overwrites);
     }
 }
