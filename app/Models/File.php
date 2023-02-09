@@ -82,6 +82,10 @@ class File extends Model
         return self::$sourceModel = $model::findOrFail($id);
     }
 
+    /**
+     * getter for resource model
+     * @return mixed
+     */
     public static function getResourceModel()
     {
         return self::$sourceModel;
