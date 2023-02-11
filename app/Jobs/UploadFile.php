@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class UploadFile implements ShouldQueue
 {
@@ -21,7 +22,7 @@ class UploadFile implements ShouldQueue
      */
     public function __construct(
         protected string $path,
-        protected array $attributes
+        protected array  $attributes
     )
     {
         //
@@ -35,8 +36,8 @@ class UploadFile implements ShouldQueue
      */
     public function handle(Filesystem $fileManager)
     {
-        $path = $fileManager->putFileAs('test', $this->path, $this->attributes['name'], 'public');
-        if (! $path){
+        $path = $fileManager->putFileAs('test', $this->path, Str::uuid() . '.' . $this->attributes['type'], 'public');
+        if (!$path) {
             throw new \Exception('Fail to upload the file');
         }
 
