@@ -36,7 +36,7 @@ class UploadFile implements ShouldQueue
      */
     public function handle(Filesystem $fileManager)
     {
-        $path = $fileManager->putFileAs('test', $this->path, Str::uuid() . '.' . $this->attributes['type'], 'public');
+        $path = $fileManager->putFileAs('junsing', $this->path, Str::uuid() . '.' . $this->attributes['type'], 'public');
         if (!$path) {
             throw new \Exception('Fail to upload the file');
         }
