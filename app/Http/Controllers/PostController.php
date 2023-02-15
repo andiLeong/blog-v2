@@ -17,8 +17,8 @@ class PostController extends Controller
     public function store(Post $post)
     {
         $data = request()->validate([
-            'title' => 'required|unique:posts',
-            'body' => 'required',
+            'title' => 'required|unique:posts|max:255|string',
+            'body' => 'required|string',
             'tags' => 'required|array',
         ]);
         return $post->store($data);

@@ -11,9 +11,9 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    public function signIn(User $user = null, Array $attributes = null)
+    public function signIn(User $user = null, array $attributes = null)
     {
-        $user ??= create(User::class,$attributes ??= []);
+        $user ??= create(User::class, $attributes ??= []);
         $this->actingAs($user);
         return $this;
     }
@@ -23,20 +23,20 @@ abstract class TestCase extends BaseTestCase
         return $this->signIn(admin());
     }
 
-    public function createPost($tags = null)
+    public function createPost($overwrites = [])
     {
         return $this->admin()->postJson('/api/posts',
-            $this->postAttributes($tags)
+            $this->postAttributes($overwrites)
         );
     }
 
-    public function postAttributes($tags = null)
+    protected function postAttributes($overwrites = [])
     {
         $attributes = make(Post::class)->toArray();
-        $tags ??= create(Tag::class,[],2)->pluck('name');
+        if (!array_key_exists('tags', $overwrites)) {
+            $overwrites['tags'] = create(Tag::class, [], 2)->pluck('name');
+        }
 
-        return array_merge( $attributes, [
-            'tags' => $tags
-        ]);
+        return array_merge($attributes, $overwrites);
     }
 }

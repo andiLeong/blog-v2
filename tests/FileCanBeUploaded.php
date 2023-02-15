@@ -22,7 +22,7 @@ trait FileCanBeUploaded
                 ->andReturn($mockReturn === null ? $file->name : $mockReturn)
         );
 
-        return $this->be(admin())->postJson('/api/files', [
+        return $this->admin()->postJson('/api/files', [
             'fileable_id' => $model->getKey(),
             'fileable_type' => class_basename($model),
             'file' => $file,
