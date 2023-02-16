@@ -12,7 +12,7 @@ class FileController extends Controller
         $data = request()->validate([
             'file' => 'required|file',
             'last_modified' => ['required', function (string $attribute, mixed $value, \Closure $fail) {
-                if (!is_integer($value) || $value <= 0 || $value >= PHP_INT_MAX) {
+                if (!is_integer((int) $value) || $value <= 0 || $value >= PHP_INT_MAX) {
                     $fail("The {$attribute} is not a valid timestamp.");
                 }
             }],

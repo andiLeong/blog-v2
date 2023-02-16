@@ -37,6 +37,8 @@ class FileUploadTest extends testcase
         $this->fire(['last_modified' => 'not-a-timestamp'])->assertJsonValidationErrorFor('last_modified');
         $this->fire(['last_modified' => 0])->assertJsonValidationErrorFor('last_modified');
         $this->fire(['last_modified' => -300])->assertJsonValidationErrorFor('last_modified');
+        $this->fire(['last_modified' => '1658994096589'])->assertJsonMissingValidationErrors('last_modified');
+        $this->fire(['last_modified' => 1658994096589])->assertJsonMissingValidationErrors('last_modified');
     }
 
     /** @test */
