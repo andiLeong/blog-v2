@@ -30,8 +30,11 @@ class PostController extends Controller
         $data = request()->validate([
             'title' => [
                 'required',
-                Rule::unique('posts')->ignore($post->id),],
-            'body' => 'required',
+                'string',
+                'max:255',
+                Rule::unique('posts')->ignore($post->id),
+            ],
+            'body' => 'required|string',
             'tags' => 'required|array',
         ]);
 

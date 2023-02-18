@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Support\Str;
 use Tests\TestCase;
+use Tests\Validate;
 
 class CreatePostTest extends TestCase
 {
@@ -32,31 +32,45 @@ class CreatePostTest extends TestCase
         $this->signIn()->postJson('/api/posts', [])->assertStatus(403);
     }
 
-    /**
-     * @dataProvider titleProvider
-     * @test
-     */
-    public function title_must_be_valid($payload)
+    /** @test */
+    public function title_must_be_valid()
     {
-        $this->createPost($payload)->assertJsonValidationErrorFor('title');
+        $name = 'title';
+        $rule = [
+            'required' => 'The title field is required.',
+            'string',
+            'max:255' => 'The title must not be greater than 255 characters.',
+            'unique:title:' . Post::class
+        ];
+        Validate::name($name)->against($rule)->through(
+            fn($payload) => $this->createPost($payload)
+        );
+
+        $this->admin()->postJson('/api/posts', [])->assertJsonValidationMessageFor($name, null, 'The title field is required.');
     }
 
-    /**
-     * @dataProvider bodyProvider
-     * @test
-     */
-    public function body_must_be_valid($payload)
+    /** @test */
+    public function body_must_be_valid()
     {
-        $this->createPost($payload)->assertJsonValidationErrorFor('body');
+        $name = 'body';
+        $rule = ['required', 'string'];
+        Validate::name($name)->against($rule)->through(
+            fn($payload) => $this->createPost($payload)
+        );
+
+        $this->postJson('/api/posts', [])->assertJsonValidationErrorFor($name);
     }
 
-    /**
-     * @dataProvider tagsProvider
-     * @test
-     */
-    public function tags_must_be_valid($payload): void
+    /** @test */
+    public function tags_must_be_valid()
     {
-        $this->createPost($payload)->assertJsonValidationErrorFor('tags');
+        $name = 'tags';
+        $rule = ['required', 'array'];
+        Validate::name($name)->against($rule)->through(
+            fn($payload) => $this->createPost($payload)
+        );
+
+        $this->postJson('/api/posts', [])->assertJsonValidationErrorFor($name);
     }
 
     /** @test */
@@ -82,42 +96,4 @@ class CreatePostTest extends TestCase
         $this->get('api/posts')->assertSee($tags);
     }
 
-    public function tagsProvider()
-    {
-        return [
-            [['tags' => null]],
-            [['tags' => '']],
-            [['tags' => 'foo']],
-            [['tags' => '  ']],
-            [['tags' => 33]],
-            [['tags' => true]],
-        ];
-    }
-
-    public function bodyProvider()
-    {
-        return[
-            [['body' => null]],
-            [['body' => '']],
-            [['body' => '  ']],
-            [['body' => ['foo' => 'bar']]],
-            [['body' => 33]],
-            [['body' => true]],
-        ];
-    }
-
-    public function titleProvider()
-    {
-//        $post = create(Post::class);
-        return [
-            [['title' => null]],
-            [['title' => '']],
-            [['title' => '  ']],
-//            [['title' => $post->title]],
-            [['title' => Str::random(256)]],
-            [['title' => ['foo']]],
-            [['title' => 34]],
-            [['title' => true]],
-        ];
-    }
 }

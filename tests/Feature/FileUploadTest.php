@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\FileCanBeUploaded;
 use Tests\TestCase;
+use Tests\Validate;
 
 class FileUploadTest extends testcase
 {
@@ -24,10 +25,11 @@ class FileUploadTest extends testcase
     /** @test */
     public function file_must_be_a_file()
     {
-        $this->fire(['file' => 'not-a-file'])->assertJsonValidationErrorFor('file');
-        $this->fire(['file' => 9])->assertJsonValidationErrorFor('file');
-        $this->fire(['file' => true])->assertJsonValidationErrorFor('file');
-        $this->fire(['file' => null])->assertJsonValidationErrorFor('file');
+        $name = 'file';
+        $rule = ['required', 'file'];
+        Validate::name($name)->against($rule)->through(
+            fn($payload) => $this->fire($payload)
+        );
     }
 
     /** @test */

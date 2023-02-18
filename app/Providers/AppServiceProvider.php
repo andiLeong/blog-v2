@@ -5,9 +5,12 @@ namespace App\Providers;
 use App\Practice\Validation\Validator;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Testing\Assert as PHPUnit;
+use Illuminate\Testing\TestResponse;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,12 +41,29 @@ class AppServiceProvider extends ServiceProvider
             return Storage::disk('digitalocean');
         });
 
-        Str::macro('pluralWords', function($word, $number, $separator = ' '){
+        Str::macro('pluralWords', function ($word, $number, $separator = ' ') {
             return $number . $separator . Str::plural($word, $number);
         });
 
-        UploadedFile::macro('setUploadedPath', function($path){
-           $this->uploadedPath = $path;
+        TestResponse::macro('assertJsonValidationMessageFor', function ($key, $rule = null, $message = null, $responseKey = 'errors') {
+
+            $this->assertJsonValidationErrorFor($key);
+
+            $jsonErrors = Arr::get($this->json(), $responseKey) ?? [];
+
+            if ($message === null && $rule !== null) {
+                $message = str_replace(':attribute', $key, trans('validation.' . $rule));
+            }
+
+            if (is_null($message) && is_null($rule)) {
+                return PHPUnit::fail('No message or rule specified.');
+            }
+
+            PHPUnit::assertTrue(
+                in_array($message, $jsonErrors[$key]),
+                $key . ' is not within the json response.'
+            );
+
         });
     }
 }
