@@ -5,8 +5,10 @@ namespace Tests\Feature;
 use App\Models\File;
 use App\Models\Gallery;
 use App\Models\Video;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Mockery\MockInterface;
 use Tests\FileCanBeUploaded;
 use Tests\TestCase;
 use Tests\Validate;
@@ -35,6 +37,12 @@ class FileUploadTest extends testcase
     /** @test */
     public function last_modified_is_a_required_filed()
     {
+        $this->mock(Filesystem::class, fn(MockInterface $mock) =>
+        $mock->shouldReceive('putFileAs')
+            ->twice()
+            ->andReturn('path')
+        );
+
         $this->fire(['last_modified' => null])->assertJsonValidationErrorFor('last_modified');
         $this->fire(['last_modified' => 'not-a-timestamp'])->assertJsonValidationErrorFor('last_modified');
         $this->fire(['last_modified' => 0])->assertJsonValidationErrorFor('last_modified');

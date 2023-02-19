@@ -16,11 +16,7 @@ trait FileCanBeUploaded
         Config::set('queue.default', 'sync');
         $file = UploadedFile::fake()->image($name);
 
-        $this->mock(Filesystem::class, fn(MockInterface $mock) =>
-            $mock->shouldReceive('putFileAs')
-                ->once()
-                ->andReturn($mockReturn === null ? $file->name : $mockReturn)
-        );
+        $this->mockFileInterface($mockReturn === null ? $file->name : $mockReturn);
 
         return $this->admin()->postJson('/api/files', [
             'fileable_id' => $model->getKey(),
@@ -30,5 +26,14 @@ trait FileCanBeUploaded
                 ? $lastModified->getTimestamp() * 1000
                 : now()->subDays(20)->timestamp * 1000,
         ]);
+    }
+
+    public function mockFileInterface($return = 'path')
+    {
+        $this->mock(Filesystem::class, fn(MockInterface $mock) =>
+            $mock->shouldReceive('putFileAs')
+                ->once()
+                ->andReturn($return)
+        );
     }
 }

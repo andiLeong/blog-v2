@@ -1,6 +1,6 @@
 <?php
 
-namespace App\QueryFilter;
+namespace App\QueryFilterOld;
 
 
 use Illuminate\Database\Eloquent\Builder;
